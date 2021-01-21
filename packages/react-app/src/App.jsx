@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
+import { Menu } from "antd";
 import {
   useExchangePrice,
   useUserProvider,
@@ -13,9 +14,14 @@ import {
   useContractReader,
   useEventListener,
   useBalance,
+  useGasPrice,
 } from "./hooks";
 import { Header, Account, Contract } from "./components";
 import { formatEther } from "@ethersproject/units";
+import { Transactor } from "./helpers";
+
+import BasicUI from "./views/BasicUI";
+
 //import Hints from "./Hints";
 /*
     Welcome to 🏗 scaffold-eth !
@@ -58,6 +64,7 @@ if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
 function App(props) {
+  const gasPrice = useGasPrice("fast"); //1000000000 for xdai
   const [injectedProvider, setInjectedProvider] = useState();
   /* 💵 this hook will get the price of ETH from 🦄 Uniswap: */
   const price = useExchangePrice(mainnetProvider); //1 for xdai
@@ -96,13 +103,8 @@ function App(props) {
   //const myMainnetBalance = useContractReader({DAI: mainnetDAIContract},"DAI", "balanceOf",["0x34aA3F359A9D614239015126635CE7732c18fDF3"])
   //
 
-  // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
-  console.log("🤗 purpose:", purpose);
-
-  //📟 Listen for broadcast events
-  const setPurposeEvents = useEventListener(readContracts, "YourContract", "SetPurpose", localProvider, 1);
-  console.log("📟 SetPurpose events:", setPurposeEvents);
+  // The transactor wraps transactions and provides notificiations
+  const tx = Transactor(userProvider, gasPrice);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -119,20 +121,50 @@ function App(props) {
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
-
+  const [route, setRoute] = useState("/");
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
 
       <BrowserRouter>
+        <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
+          <Menu.Item key="/">
+            <Link
+              onClick={() => {
+                setRoute("/");
+              }}
+              to="/"
+            >
+              YourContract
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="trial">
+            <Link
+              onClick={() => {
+                setRoute("trial");
+              }}
+              to="/trial"
+            >
+              Trial
+            </Link>
+          </Menu.Item>
+        </Menu>
         <Switch>
+          <Route exact path="/trial">
+            <BasicUI
+              address={address}
+              userProvider={userProvider}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
+            />
+          </Route>
           <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
             <Contract
               name="LevAave"
               signer={userProvider.getSigner()}
