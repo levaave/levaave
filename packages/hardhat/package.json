@@ -25,7 +25,7 @@
   },
   "scripts": {
     "chain": "hardhat node --hostname 0.0.0.0",
-    "fork": "hardhat node --fork <INSERT ALCHEMY URL>",
+    "fork": "hardhat node --fork https://eth-mainnet.alchemyapi.io/v2/1IyrLdJM27gLxzN_QDMuu7tPgvK3dw-t",
     "test": "hardhat test --network hardhat",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.js && hardhat run scripts/publish.js",
