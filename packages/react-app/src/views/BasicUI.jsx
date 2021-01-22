@@ -3,6 +3,9 @@ import { parseEther, formatEther } from "@ethersproject/units";
 import { Row, Col, Input, Form, Label, Button } from "reactstrap";
 import Select from "react-select";
 import { abi } from "./levAave";
+import { debtTokenAbi } from "./debtTokenABI";
+import { iErc20Abi } from "./IERC20ABI";
+
 import {
   Layout,
   Radio,
@@ -30,9 +33,16 @@ function BasicUI(props) {
   // const contract = useContractLoader("LevAave");
 
   const [leverageType, updateLevergaeType] = useState("long");
-  const [principalAmount, updatePrincipleAmount] = useState(0);
-  const [selectedCollateralCurrencyType, updateSelectedCollateralCurrencyType] = useState(0);
-  // const [selectedCollateralCurrencyType, updatePrincipleAmount] = useState(0);
+  const [collateralAmount, updateCollateralAmount] = useState(0);
+  const [selectedCollateralCurrencyType, updateSelectedCollateralCurrencyType] = useState({
+    label: "WETH",
+    value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  });
+  const [selectedLeverageCurrencyType, updateSelectedLeverageCurrencyType] = useState({
+    label: "LINK",
+    value: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+  });
+  // const [selectedCollateralCurrencyType, updateCollateralAmount] = useState(0);
   const [leverageMulitplier, updateLeverageMultiplier] = useState(1);
   // const [selected]
 
@@ -51,7 +61,7 @@ function BasicUI(props) {
   const {
     // address,
     // mainnetProvider,
-    // userProvider,
+    userProvider,
     localProvider,
     // yourLocalBalance,
     // price,
@@ -59,23 +69,75 @@ function BasicUI(props) {
     // readContracts,
     // writeContracts,
   } = props;
+  console.log(userProvider);
+  const ourContractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
+  const contract = new ethers.Contract(ourContractAddress, abi, localProvider);
 
-  const contractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
-  const contract = new ethers.Contract(contractAddress, abi, localProvider);
-  console.log(contract);
+  const wEthVariableTokenContract = new ethers.Contract(ourContractAddress, debtTokenAbi, userProvider);
+  console.log(debtTokenAbi);
+  const collateralTokenContract = new ethers.Contract(ourContractAddress, iErc20Abi, userProvider);
 
+  // ---- credit delegation -----
+  const getDelegationApproval = (tokenAddress, amount) => {
+    const borrower = ourContractAddress;
+    const amountInWei = ethers.utils.parseEther(amount);
+    // get relevant contract depending upon token
+    wEthVariableTokenContract.approveDelegation(borrower, amountInWei);
+  };
+
+  const isCreditDelegated = (tokenAddress, amount) => {
+    const borrower = ourContractAddress;
+    const amountInWei = ethers.utils.parseEther(amount);
+    const userAddress = userProvider.selectedAddress;
+    // get relevant contract depending upon token
+    const totalDelegatedCreditAllowance = wEthVariableTokenContract.borrowAllowance(userAddress, borrower);
+    if (totalDelegatedCreditAllowance >= amountInWei) {
+      return true;
+    }
+    return false;
+  };
+
+  // ---- erc approvals ----
+  const isCollateralApproved = (tokenAddress, amount) => {
+    const beneficiary = ourContractAddress;
+    const amountInWei = ethers.utils.parseEther(amount);
+    const userAddress = userProvider.selectedAddress;
+    // get relevant contract depending upon token
+    const totalApproval = collateralTokenContract.allowance(userAddress, beneficiary);
+    if (totalApproval >= amountInWei) {
+      return true;
+    }
+    return false;
+  };
+
+  const approveCollateral = amount => {
+    const beneficiary = ourContractAddress;
+    const amountInWei = ethers.utils.parseEther(amount);
+    // get relevant contract depending upon token
+    collateralTokenContract.approve(beneficiary, amountInWei);
+  };
+
+  // --- form values ----
   const onChangeLeverageType = event => {
     const value = event.target.value;
     updateLevergaeType(value);
   };
 
   const leverage = () => {
-    const valueInWei = ethers.utils.parseEther(principalAmount);
+    debugger;
+    const collateralValueInWei = ethers.utils.parseEther(collateralAmount);
+    if (!isCollateralApproved()) {
+      approveCollateral(collateralValueInWei);
+    }
+    if (!isCreditDelegated()) {
+      const valueToDelegate = ethers.utils.parseEther(10000);
+      getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
+    }
     contract.myFlashLoanCall(
       "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "0x514910771AF9Ca656af840dff83E8264EcF986CA",
       aaveContractAddress.ALINK,
-      valueInWei,
+      collateralValueInWei,
     );
   };
 
@@ -101,7 +163,11 @@ function BasicUI(props) {
               >
                 <Form>
                   <Label>Select the currency you want to deposit</Label>
-                  <Select options={userCurrencyOptions} />
+                  <Select
+                    options={userCurrencyOptions}
+                    value={selectedCollateralCurrencyType}
+                    onChange={selectedOption => updateSelectedCollateralCurrencyType(selectedOption)}
+                  />
 
                   <br />
                   <Radio.Group onChange={onChangeLeverageType} value={leverageType}>
@@ -110,16 +176,20 @@ function BasicUI(props) {
                   </Radio.Group>
                   <br />
                   <Label>Select the currency you want to Leverage</Label>
-                  <Select options={optionsForLeveraging} />
+                  <Select
+                    options={optionsForLeveraging}
+                    value={selectedLeverageCurrencyType}
+                    onChange={selectedOption => updateSelectedLeverageCurrencyType(selectedOption)}
+                  />
                   <br />
                   <Label>Collateral amount</Label>
                   <Input
                     size={"lg"}
                     onChange={e => {
                       // let valueInWei = ethers.utils.parseEther();
-                      updatePrincipleAmount(e.target.value);
+                      updateCollateralAmount(e.target.value);
                     }}
-                    value={principalAmount}
+                    value={collateralAmount}
                   />
                   <br />
                   {/* <Label>Leverage Multiplier</Label>

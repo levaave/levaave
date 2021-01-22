@@ -1,9 +1,11 @@
 pragma solidity 0.6.12;
 
-import { FlashLoanReceiverBase } from "./utils/FlashLoanReceiverBase.sol";
-import { ILendingPool } from "./interfaces/ILendingPool.sol";
-import { ILendingPoolAddressesProvider } from "./interfaces/ILendingPoolAddressesProvider.sol";
-import { IERC20 } from "./interfaces/IERC20.sol";
+import {FlashLoanReceiverBase} from "./utils/FlashLoanReceiverBase.sol";
+import {ILendingPool} from "./interfaces/ILendingPool.sol";
+import {
+    ILendingPoolAddressesProvider
+} from "./interfaces/ILendingPoolAddressesProvider.sol";
+import {IERC20} from "./interfaces/IERC20.sol";
 
 interface IOneSplit {
     function getExpectedReturn(
@@ -26,9 +28,13 @@ interface IOneSplit {
 
 contract LevAave is FlashLoanReceiverBase {
     IOneSplit oneInch = IOneSplit(0x50FDA034C0Ce7a8f7EFDAebDA7Aa7cA21CC1267e);
-    ILendingPool pool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
+    ILendingPool pool =
+        ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
 
-    constructor(ILendingPoolAddressesProvider _addressProvider) public FlashLoanReceiverBase(_addressProvider) {}
+    constructor(ILendingPoolAddressesProvider _addressProvider)
+        public
+        FlashLoanReceiverBase(_addressProvider)
+    {}
 
     struct SlotInfo {
         uint256 balance;
@@ -52,19 +58,41 @@ contract LevAave is FlashLoanReceiverBase {
         SlotInfo memory slot;
         slot.amount = amounts[0];
         slot.balance = IERC20(assets[0]).balanceOf(address(this));
-        (slot.sender, slot.positionAsset, slot.apositionAsset) = abi.decode(params, (address, address, address));
+        (slot.sender, slot.positionAsset, slot.apositionAsset) = abi.decode(
+            params,
+            (address, address, address)
+        );
 
         // get 1inch v1 distribution
         (uint256 returnAmount, uint256[] memory distribution) =
-            oneInch.getExpectedReturn(IERC20(assets[0]), IERC20(slot.positionAsset), slot.balance, 10, 0);
+            oneInch.getExpectedReturn(
+                IERC20(assets[0]),
+                IERC20(slot.positionAsset),
+                slot.balance,
+                10,
+                0
+            );
         // if no 1inch allowance, approve
-        if (IERC20(assets[0]).allowance(address(this), address(oneInch)) < slot.balance) {
+        if (
+            IERC20(assets[0]).allowance(address(this), address(oneInch)) <
+            slot.balance
+        ) {
             IERC20(assets[0]).approve(address(oneInch), uint256(-1));
         }
         // 1inch swap
-        oneInch.swap(IERC20(assets[0]), IERC20(slot.positionAsset), slot.balance, 1, distribution, 0);
+        oneInch.swap(
+            IERC20(assets[0]),
+            IERC20(slot.positionAsset),
+            slot.balance,
+            1,
+            distribution,
+            0
+        );
         // if no aave allowance, approve
-        if (IERC20(slot.positionAsset).allowance(address(this), address(pool)) < slot.balance) {
+        if (
+            IERC20(slot.positionAsset).allowance(address(this), address(pool)) <
+            slot.balance
+        ) {
             IERC20(slot.positionAsset).approve(address(pool), uint256(-1));
         }
         // deposit collateral to aave on behalf of user
@@ -87,7 +115,11 @@ contract LevAave is FlashLoanReceiverBase {
         address apositionAsset,
         uint256 amount
     ) public {
-        IERC20(collateralAsset).transferFrom(msg.sender, address(this), amount.div(2));
+        IERC20(collateralAsset).transferFrom(
+            msg.sender,
+            address(this),
+            amount.div(2)
+        );
         address receiverAddress = address(this);
 
         address[] memory assets = new address[](1);
@@ -101,10 +133,20 @@ contract LevAave is FlashLoanReceiverBase {
         modes[0] = 0;
 
         address onBehalfOf = address(this);
-        bytes memory params = abi.encode(msg.sender, positionAsset, apositionAsset);
+        bytes memory params =
+            abi.encode(msg.sender, positionAsset, apositionAsset);
         uint16 referralCode = 0;
 
-        LENDING_POOL.flashLoan(receiverAddress, assets, amounts, modes, onBehalfOf, params, referralCode);
+        LENDING_POOL.flashLoan(
+            receiverAddress,
+            assets,
+            amounts,
+            modes,
+            onBehalfOf,
+            params,
+            referralCode
+        );
     }
+
     receive() external payable {}
 }
