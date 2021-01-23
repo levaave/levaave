@@ -52,7 +52,7 @@ function BasicUI(props) {
     AWETH: "0x030bA81f1c18d280636F32af80b9AAd02Cf0854e",
     ALINK: "0xa06bC25B5805d5F8d82847D191Cb4Af5A3e873E0",
   };
-  
+
   const optionsForLeveraging = [
     { label: "WETH", value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" },
     { label: "LINK", value: "0x514910771AF9Ca656af840dff83E8264EcF986CA" },
@@ -69,13 +69,17 @@ function BasicUI(props) {
     // readContracts,
     // writeContracts,
   } = props;
-  console.log(userProvider.provider);
+  // console.log(userProvider.provider);
   const ourContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const signer = userProvider.getSigner();
   const contract = new ethers.Contract(ourContractAddress, abi, signer);
 
-  const wEthVariableTokenContract = new ethers.Contract('0xF63B34710400CAd3e044cFfDcAb00a0f32E33eCf', debtTokenAbi, signer);
-  console.log(debtTokenAbi);
+  const wEthVariableTokenContract = new ethers.Contract(
+    "0xF63B34710400CAd3e044cFfDcAb00a0f32E33eCf",
+    debtTokenAbi,
+    signer,
+  );
+  // console.log(debtTokenAbi);
   const collateralTokenContract = new ethers.Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", iErc20Abi, signer);
 
   const userAddress = userProvider.provider.selectedAddress;
@@ -83,7 +87,7 @@ function BasicUI(props) {
   // ---- credit delegation -----
   const getDelegationApproval = async (tokenAddress, amount) => {
     try {
-      debugger;
+      // debugger;
       const borrower = ourContractAddress;
       const amountInWei = amount;
       await wEthVariableTokenContract.approveDelegation(borrower, amountInWei);
@@ -95,12 +99,12 @@ function BasicUI(props) {
 
   const isCreditDelegated = async (tokenAddress, amount) => {
     try {
-      debugger;
+      // debugger;
       const borrower = ourContractAddress;
-      const amountInWei = ethers.utils.parseEther(amount).toString();
+      const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
       const totalDelegatedCreditAllowance = await wEthVariableTokenContract.borrowAllowance(userAddress, borrower);
-      if (totalDelegatedCreditAllowance.toString() >= amountInWei) {
+      if (totalDelegatedCreditAllowance >= amountInWei) {
         return true;
       }
       return false;
@@ -112,12 +116,12 @@ function BasicUI(props) {
   // ---- erc approvals ----
   const isCollateralApproved = async (tokenAddress, amount) => {
     try {
-      debugger;
+      // debugger;
       const beneficiary = ourContractAddress;
-      const amountInWei = ethers.utils.parseEther(amount).toString();
+      const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
       const totalApproval = await collateralTokenContract.allowance(userAddress, beneficiary);
-      if (totalApproval.toString() >= amountInWei) {
+      if (totalApproval >= amountInWei) {
         return true;
       }
       return false;
@@ -127,13 +131,13 @@ function BasicUI(props) {
   };
 
   const approveCollateral = async amount => {
-    debugger;
+    // debugger;
     try {
       const beneficiary = ourContractAddress;
-      const amountInWei = ethers.utils.parseEther(amount).toString();
+      const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
       let result = await collateralTokenContract.approve(beneficiary, amountInWei);
-      debugger;
+      // debugger;
       if (result.hash) return true;
       else return false;
     } catch (e) {
@@ -148,16 +152,16 @@ function BasicUI(props) {
   };
 
   const leverage = async () => {
-    debugger;
-    const collateralValueInWei = ethers.utils.parseEther(collateralAmount).toString();
+    // debugger;
+    const collateralValueInWei = ethers.utils.parseEther(collateralAmount);
     if (!(await isCollateralApproved("", collateralAmount))) {
       await approveCollateral(collateralAmount);
     }
     if (!(await isCreditDelegated("", "10000000"))) {
-      const valueToDelegate = ethers.utils.parseEther('10000').toString();
+      const valueToDelegate = ethers.utils.parseEther("10000");
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
-    contract.myFlashLoanCall(
+    const tx = await contract.myFlashLoanCall(
       "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "0x514910771AF9Ca656af840dff83E8264EcF986CA",
       aaveContractAddress.ALINK,
@@ -221,7 +225,7 @@ function BasicUI(props) {
                     value={}
                   } /> */}
                   <br />
-                  <Button onClick={() => leverage()}>Submit </Button>
+                  <Button onClick={leverage}>Submit </Button>
                 </Form>
                 {/* <Select /> */}
               </div>

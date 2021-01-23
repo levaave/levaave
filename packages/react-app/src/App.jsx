@@ -44,7 +44,7 @@ import BasicUI from "./views/BasicUI";
 import { INFURA_ID } from "./constants";
 
 // 😬 Sorry for all the console logging 🤡
-const DEBUG = true;
+const DEBUG = false;
 
 // 🔭 block explorer URL
 const blockExplorer = "https://etherscan.io/"; // for xdai: "https://blockscout.com/poa/xdai/"
