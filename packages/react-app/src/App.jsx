@@ -78,20 +78,20 @@ function App(props) {
   const address = useUserAddress(userProvider);
 
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
-  const yourLocalBalance = useBalance(localProvider, address);
-  if (DEBUG) console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
+  // const yourLocalBalance = useBalance(localProvider, address);
+  // if (DEBUG) console.log("💵 yourLocalBalance", yourLocalBalance ? formatEther(yourLocalBalance) : "...");
 
-  // just plug in different 🛰 providers to get your balance on different chains:
-  const yourMainnetBalance = useBalance(mainnetProvider, address);
-  if (DEBUG) console.log("💵 yourMainnetBalance", yourMainnetBalance ? formatEther(yourMainnetBalance) : "...");
+  // // just plug in different 🛰 providers to get your balance on different chains:
+  // const yourMainnetBalance = useBalance(mainnetProvider, address);
+  // if (DEBUG) console.log("💵 yourMainnetBalance", yourMainnetBalance ? formatEther(yourMainnetBalance) : "...");
 
-  // Load in your local 📝 contract and read a value from it:
-  const readContracts = useContractLoader(localProvider);
-  if (DEBUG) console.log("📝 readContracts", readContracts);
+  // // Load in your local 📝 contract and read a value from it:
+  // const readContracts = useContractLoader(localProvider);
+  // if (DEBUG) console.log("📝 readContracts", readContracts);
 
-  // If you want to make 🔐 write transactions to your contracts, use the userProvider:
-  const writeContracts = useContractLoader(userProvider);
-  if (DEBUG) console.log("🔐 writeContracts", writeContracts);
+  // // If you want to make 🔐 write transactions to your contracts, use the userProvider:
+  // const writeContracts = useContractLoader(userProvider);
+  // if (DEBUG) console.log("🔐 writeContracts", writeContracts);
 
   // EXTERNAL CONTRACT EXAMPLE:
   //
@@ -157,21 +157,21 @@ function App(props) {
               userProvider={userProvider}
               mainnetProvider={mainnetProvider}
               localProvider={localProvider}
-              yourLocalBalance={yourLocalBalance}
-              price={price}
-              tx={tx}
-              writeContracts={writeContracts}
-              readContracts={readContracts}
+              // yourLocalBalance={yourLocalBalance}
+              // price={price}
+              // tx={tx}
+              // writeContracts={writeContracts}
+              // readContracts={readContracts}
             />
           </Route>
           <Route exact path="/">
-            <Contract
+            {/* <Contract
               name="LevAave"
               signer={userProvider.getSigner()}
               provider={localProvider}
               address={address}
               blockExplorer={blockExplorer}
-            />
+            /> */}
 
             {/* Uncomment to display and interact with an external contract (DAI on mainnet):
             <Contract

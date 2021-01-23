@@ -79,7 +79,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "collateralAsset",
+        "name": "loanAsset",
         "type": "address"
       },
       {
@@ -96,15 +96,26 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "operation",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "collateralAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "collateralAmount",
+        "type": "uint256"
       }
     ],
     "name": "myFlashLoanCall",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

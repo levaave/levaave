@@ -2,10 +2,11 @@ import React, { useState, memo } from "react";
 import { parseEther, formatEther } from "@ethersproject/units";
 import { Row, Col, Input, Form, Label, Button } from "reactstrap";
 import Select from "react-select";
-import { abi } from "./levAave";
+import abi  from "../contracts/LevAave.abi";
+import flashloancontract from "../contracts/LevAave.address.js"
 import { debtTokenAbi } from "./debtTokenABI";
 import { iErc20Abi } from "./IERC20ABI";
-
+import { useUserAddress } from "eth-hooks";
 import {
   Layout,
   Radio,
@@ -70,7 +71,7 @@ function BasicUI(props) {
     // writeContracts,
   } = props;
   // console.log(userProvider.provider);
-  const ourContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const ourContractAddress = flashloancontract;
   const signer = userProvider.getSigner();
   const contract = new ethers.Contract(ourContractAddress, abi, signer);
 
@@ -82,7 +83,7 @@ function BasicUI(props) {
   // console.log(debtTokenAbi);
   const collateralTokenContract = new ethers.Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", iErc20Abi, signer);
 
-  const userAddress = userProvider.provider.selectedAddress;
+  const userAddress = useUserAddress(userProvider);
 
   // ---- credit delegation -----
   const getDelegationApproval = async (tokenAddress, amount) => {
@@ -90,7 +91,8 @@ function BasicUI(props) {
       // debugger;
       const borrower = ourContractAddress;
       const amountInWei = amount;
-      await wEthVariableTokenContract.approveDelegation(borrower, amountInWei);
+      let r = await wEthVariableTokenContract.approveDelegation(borrower, amountInWei);
+      console.log(r)
       // get relevant contract depending upon token
     } catch (ex) {
       console.log(ex);
@@ -104,6 +106,7 @@ function BasicUI(props) {
       const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
       const totalDelegatedCreditAllowance = await wEthVariableTokenContract.borrowAllowance(userAddress, borrower);
+      console.log("delegated", totalDelegatedCreditAllowance, "required", amountInWei)
       if (totalDelegatedCreditAllowance >= amountInWei) {
         return true;
       }
@@ -121,7 +124,8 @@ function BasicUI(props) {
       const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
       const totalApproval = await collateralTokenContract.allowance(userAddress, beneficiary);
-      if (totalApproval >= amountInWei) {
+      console.log("totalApproval", totalApproval, "required", amountInWei)
+      if (totalApproval.gte(amountInWei)) {
         return true;
       }
       return false;
@@ -133,11 +137,13 @@ function BasicUI(props) {
   const approveCollateral = async amount => {
     // debugger;
     try {
+      console.log("approvingCollateral")
       const beneficiary = ourContractAddress;
       const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
       let result = await collateralTokenContract.approve(beneficiary, amountInWei);
       // debugger;
+      console.log(result)
       if (result.hash) return true;
       else return false;
     } catch (e) {
@@ -153,12 +159,13 @@ function BasicUI(props) {
 
   const leverage = async () => {
     // debugger;
+    console.log("user", userAddress)
     const collateralValueInWei = ethers.utils.parseEther(collateralAmount);
     if (!(await isCollateralApproved("", collateralAmount))) {
       await approveCollateral(collateralAmount);
     }
     if (!(await isCreditDelegated("", "10000000"))) {
-      const valueToDelegate = ethers.utils.parseEther("10000");
+      const valueToDelegate = ethers.utils.parseEther("10000000");
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
     const tx = await contract.myFlashLoanCall(
@@ -166,6 +173,9 @@ function BasicUI(props) {
       "0x514910771AF9Ca656af840dff83E8264EcF986CA",
       aaveContractAddress.ALINK,
       collateralValueInWei,
+      0,
+      "0x0000000000000000000000000000000000000000", // collateralAsset we don't need it on operation 0
+      0 // c we don't need it on operation 0
     );
   };
 

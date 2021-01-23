@@ -1,9 +1,9 @@
 pragma solidity 0.6.12;
 
-import { FlashLoanReceiverBase } from "./FlashLoanReceiverBase.sol";
-import { ILendingPool } from "./ILendingPool.sol";
-import { ILendingPoolAddressesProvider } from "./ILendingPoolAddressesProvider.sol";
-import { IERC20 } from "./IERC20.sol";
+import { FlashLoanReceiverBase } from "./utils/FlashLoanReceiverBase.sol";
+import { ILendingPool } from "./interfaces/ILendingPool.sol";
+import { ILendingPoolAddressesProvider } from "./interfaces/ILendingPoolAddressesProvider.sol";
+import { IERC20 } from "./interfaces/IERC20.sol";
 
 interface IOneSplit {
     function getExpectedReturn(
@@ -66,10 +66,13 @@ contract LevAave is FlashLoanReceiverBase {
         ) = abi.decode(params, (address, address, address, address, uint256, uint256));
         //open long position
         if (slot.operation == 0) {
+            // e.g. loanasset = weth = collateral asset , position asset = link
+
             // transfer collateral from user to contract
+            // send over eth that is equal to half the loaned. loan 2k usdc, transfer 1k usdc.
             IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.div(2));
             // update collateral balance
-            slot.balance = IERC20(slot.asset).balanceOf(address(this));
+            slot.balance = IERC20(slot.asset).balanceOf(address(this)); //3k usdc
             // get 1inch v1 distribution
             (uint256 returnAmount, uint256[] memory distribution) =
                 oneInch.getExpectedReturn(IERC20(assets[0]), IERC20(slot.positionAsset), slot.balance, 10, 0);
@@ -79,6 +82,8 @@ contract LevAave is FlashLoanReceiverBase {
             }
             // 1inch swap
             oneInch.swap(IERC20(slot.asset), IERC20(slot.positionAsset), slot.balance, 1, distribution, 0);
+            // swap 3k usdc -> eth
+            
             // if no aave allowance, approve
             if (IERC20(slot.positionAsset).allowance(address(this), address(pool)) < slot.balance) {
                 IERC20(slot.positionAsset).approve(address(pool), uint256(-1));
@@ -152,9 +157,9 @@ contract LevAave is FlashLoanReceiverBase {
     }
 
     function myFlashLoanCall(
-        address loanAsset,
-        address positionAsset,
-        address apositionAsset,
+        address loanAsset, //usdc
+        address positionAsset, //eth
+        address apositionAsset, //eth
         uint256 amount,
         uint256 operation,
         address collateralAsset,
