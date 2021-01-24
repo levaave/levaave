@@ -76,8 +76,8 @@ function BasicUI(props) {
   //   { label: "UNI", value: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984" },
   // ];
   const aaveContractAddress = {
-    AWETH: "0x030bA81f1c18d280636F32af80b9AAd02Cf0854e",
-    ALINK: "0xa06bC25B5805d5F8d82847D191Cb4Af5A3e873E0",
+    WETH: "0x030bA81f1c18d280636F32af80b9AAd02Cf0854e",
+    LINK: "0xa06bC25B5805d5F8d82847D191Cb4Af5A3e873E0",
   };
 
   const [listOfSupportedTokensFromAAVE, updateListOfSupportedTokensFromAAVE] = useState([]);
@@ -111,7 +111,7 @@ function BasicUI(props) {
     try {
       // debugger;
       const borrower = ourContractAddress;
-      const amountInWei = amount;
+      const amountInWei = ethers.utils.parseUnits("100000000000");
       let r = await variableDebtTokenContract.approveDelegation(borrower, amountInWei);
       console.log(r);
       // get relevant contract depending upon token
@@ -160,7 +160,7 @@ function BasicUI(props) {
     try {
       console.log("approvingCollateral");
       const beneficiary = ourContractAddress;
-      const amountInWei = ethers.utils.parseEther(amount);
+      const amountInWei = ethers.utils.parseEther("100000000000");
       // get relevant contract depending upon token
       let result = await collateralTokenContract.approve(beneficiary, amountInWei);
       // debugger;
@@ -198,7 +198,6 @@ function BasicUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    debugger;
   };
 
   const updateLeverageAmountAndGetQuote = async amount => {
@@ -254,17 +253,28 @@ function BasicUI(props) {
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
 
-    get1inchData();
-
-    // const tx = await contract.myFlashLoanCall(
-    //   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    //   "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-    //   aaveContractAddress.ALINK,
-    //   collateralValueInWei,
-    //   0,
-    //   "0x0000000000000000000000000000000000000000", // collateralAsset we don't need it on operation 0
-    //   0, // c we don't need it on operation 0
-    // );
+    let approveData = await getApprove1inchData(selectedCollateralCurrencyType.value);
+    console.log(approveData);
+    let swapData = await get1InchSwapData(
+      selectedCollateralCurrencyType.value,
+      selectedLeverageCurrencyType.value,
+      ethers.utils.parseUnits("3").toString(),
+      ourContractAddress,
+      maximumSlippageApproved,
+    );
+    console.log("collvaluewei", ethers.utils.formatUnits(collateralValueInWei));
+    const tx = await contract.myFlashLoanCall(
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      selectedLeverageCurrencyType.value,
+      aaveContractAddress[selectedLeverageCurrencyType.label],
+      "0x0000000000000000000000000000000000000000",
+      collateralValueInWei,
+      0,
+      0,
+      swapData.tx.data,
+      approveData.data,
+    );
+    await tx.wait();
   };
 
   return (
