@@ -1,15 +1,21 @@
 pragma solidity 0.6.12;
 
-import { FlashLoanReceiverBase } from "./utils/FlashLoanReceiverBase.sol";
-import { ILendingPool } from "./interfaces/ILendingPool.sol";
-import { ILendingPoolAddressesProvider } from "./interfaces/ILendingPoolAddressesProvider.sol";
-import { IERC20 } from "./interfaces/IERC20.sol";
+import {FlashLoanReceiverBase} from "./utils/FlashLoanReceiverBase.sol";
+import {ILendingPool} from "./interfaces/ILendingPool.sol";
+import {
+    ILendingPoolAddressesProvider
+} from "./interfaces/ILendingPoolAddressesProvider.sol";
+import {IERC20} from "./interfaces/IERC20.sol";
 
 contract LevAave is FlashLoanReceiverBase {
     address oneInch = address(0x111111125434b319222CdBf8C261674aDB56F3ae);
-    ILendingPool pool = ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
+    ILendingPool pool =
+        ILendingPool(0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9);
 
-    constructor(ILendingPoolAddressesProvider _addressProvider) public FlashLoanReceiverBase(_addressProvider) {}
+    constructor(ILendingPoolAddressesProvider _addressProvider)
+        public
+        FlashLoanReceiverBase(_addressProvider)
+    {}
 
     struct SlotInfo {
         uint256 balance;
@@ -47,11 +53,18 @@ contract LevAave is FlashLoanReceiverBase {
             slot.collateralAmount,
             slot.oneInchData,
             slot.oneInchApprove
-        ) = abi.decode(params, (address, address, address, uint256, uint256, bytes, bytes));
+        ) = abi.decode(
+            params,
+            (address, address, address, uint256, uint256, bytes, bytes)
+        );
         //open long position
         if (slot.operation == 0) {
             // transfer collateral from user to contract
-            IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.div(2));
+            IERC20(slot.asset).transferFrom(
+                slot.sender,
+                address(this),
+                slot.amount.div(2)
+            );
             // update collateral balance
             slot.balance = IERC20(slot.asset).balanceOf(address(this));
             // approve for 1inch
@@ -60,26 +73,47 @@ contract LevAave is FlashLoanReceiverBase {
             (slot.success, ) = oneInch.call(slot.oneInchData);
             require(slot.success, "1inch call failed");
             // if no aave allowance, approve
-            if (IERC20(slot.positionAsset).allowance(address(this), address(pool)) < slot.balance) {
+            if (
+                IERC20(slot.positionAsset).allowance(
+                    address(this),
+                    address(pool)
+                ) < slot.balance
+            ) {
                 IERC20(slot.positionAsset).approve(address(pool), uint256(-1));
             }
             // deposit collateral to aave on behalf of user
-            slot.wethBalance = IERC20(slot.positionAsset).balanceOf(address(this));
+            slot.wethBalance = IERC20(slot.positionAsset).balanceOf(
+                address(this)
+            );
             pool.deposit(slot.positionAsset, slot.wethBalance, slot.sender, 0);
-            pool.borrow(slot.asset, slot.amount.add(premiums[0]), 2, 0, slot.sender);
+            pool.borrow(
+                slot.asset,
+                slot.amount.add(premiums[0]),
+                2,
+                0,
+                slot.sender
+            );
         }
 
         // close long position
         if (slot.operation == 1) {
             // if no aave allowance, approve
-            if (IERC20(slot.asset).allowance(address(this), address(pool)) < slot.amount) {
+            if (
+                IERC20(slot.asset).allowance(address(this), address(pool)) <
+                slot.amount
+            ) {
                 IERC20(slot.asset).approve(address(pool), uint256(-1));
             }
             // first repay the debt of the user using the flashloan funds
             pool.repay(slot.asset, slot.amount, 2, slot.sender);
             // transfer atoken from user to contract
-            uint256 collateralBalance = IERC20(slot.apositionAsset).balanceOf(slot.sender);
-            IERC20(slot.apositionAsset).transferFrom(slot.sender, address(this), collateralBalance);
+            uint256 collateralBalance =
+                IERC20(slot.apositionAsset).balanceOf(slot.sender);
+            IERC20(slot.apositionAsset).transferFrom(
+                slot.sender,
+                address(this),
+                collateralBalance
+            );
             // transform atoken in token
             pool.withdraw(slot.positionAsset, collateralBalance, address(this));
             // approve for 1inch
@@ -89,13 +123,20 @@ contract LevAave is FlashLoanReceiverBase {
             require(slot.success, "1inch call failed");
             // send collateral back to user
             slot.balance = IERC20(slot.asset).balanceOf(address(this));
-            IERC20(slot.asset).transfer(slot.sender, slot.balance - slot.amount.add(premiums[0]));
+            IERC20(slot.asset).transfer(
+                slot.sender,
+                slot.balance - slot.amount.add(premiums[0])
+            );
         }
 
         // open short position
         if (slot.operation == 2) {
             // transfer collateral from user to contract
-            IERC20(slot.positionAsset).transferFrom(slot.sender, address(this), slot.collateralAmount);
+            IERC20(slot.positionAsset).transferFrom(
+                slot.sender,
+                address(this),
+                slot.collateralAmount
+            );
             // 1inch approve
             address(slot.asset).call(slot.oneInchApprove);
             // 1inch trade
@@ -104,15 +145,30 @@ contract LevAave is FlashLoanReceiverBase {
             // update collateral balance
             slot.balance = IERC20(slot.positionAsset).balanceOf(address(this));
             // if no aave allowance, approve
-            if (IERC20(slot.positionAsset).allowance(address(this), address(pool)) < slot.balance) {
+            if (
+                IERC20(slot.positionAsset).allowance(
+                    address(this),
+                    address(pool)
+                ) < slot.balance
+            ) {
                 IERC20(slot.positionAsset).approve(address(pool), uint256(-1));
             }
             // deposit collateral to aave on behalf of user
             pool.deposit(slot.positionAsset, slot.balance, slot.sender, 0);
             // borrow loaned asset on behalf of user
-            pool.borrow(slot.asset, slot.amount.add(premiums[0]), 2, 0, slot.sender);
+            pool.borrow(
+                slot.asset,
+                slot.amount.add(premiums[0]),
+                2,
+                0,
+                slot.sender
+            );
             // transfer loan to pay back from user to contract
-            IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.add(premiums[0]));
+            IERC20(slot.asset).transferFrom(
+                slot.sender,
+                address(this),
+                slot.amount.add(premiums[0])
+            );
         }
 
         // necessary to repay the loan
@@ -164,6 +220,14 @@ contract LevAave is FlashLoanReceiverBase {
             );
         uint16 referralCode = 0;
 
-        LENDING_POOL.flashLoan(address(this), assets, amounts, modes, onBehalfOf, params, referralCode);
+        LENDING_POOL.flashLoan(
+            address(this),
+            assets,
+            amounts,
+            modes,
+            onBehalfOf,
+            params,
+            referralCode
+        );
     }
 }

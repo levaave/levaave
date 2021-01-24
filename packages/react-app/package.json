@@ -44,6 +44,7 @@
     "isomorphic-fetch": "^3.0.0",
     "qrcode.react": "^1.0.0",
     "react": "^16.14.0",
+    "react-async": "^10.0.1",
     "react-blockies": "^1.4.1",
     "react-dom": "^16.14.0",
     "react-qr-reader": "^2.2.1",
