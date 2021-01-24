@@ -1,9 +1,9 @@
 pragma solidity 0.6.12;
 
-import { FlashLoanReceiverBase } from "./FlashLoanReceiverBase.sol";
-import { ILendingPool } from "./ILendingPool.sol";
-import { ILendingPoolAddressesProvider } from "./ILendingPoolAddressesProvider.sol";
-import { IERC20 } from "./IERC20.sol";
+import { FlashLoanReceiverBase } from "./utils/FlashLoanReceiverBase.sol";
+import { ILendingPool } from "./interfaces/ILendingPool.sol";
+import { ILendingPoolAddressesProvider } from "./interfaces/ILendingPoolAddressesProvider.sol";
+import { IERC20 } from "./interfaces/IERC20.sol";
 
 contract LevAave is FlashLoanReceiverBase {
     address oneInch = address(0x111111125434b319222CdBf8C261674aDB56F3ae);
