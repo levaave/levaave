@@ -93,6 +93,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "debtAsset",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -103,14 +108,19 @@
         "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "collateralAsset",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "collateralAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "oneInchData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "oneInchApprove",
+        "type": "bytes"
       }
     ],
     "name": "myFlashLoanCall",
