@@ -38,7 +38,6 @@ export const getApprove1inchData = async tokenAddress => {
       },
     });
     let response = await fetch(request);
-    debugger;
     return response.json();
   } catch (error) {
     console.log("error in getApprove1incData", error);
@@ -71,7 +70,7 @@ export const get1InchSwapData = async (
   maxSlippagePercentage,
 ) => {
   try {
-    const oneInchAproveDataUrl = `https://api.1inch.exchange/v2.0/quote?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&amount=${amount}&fromAddress=${fromAddress}&slippage=${maxSlippagePercentage}`;
+    const oneInchAproveDataUrl = `https://api.1inch.exchange/v2.0/swap?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&amount=${amount}&fromAddress=${fromAddress}&slippage=${maxSlippagePercentage}&disableEstimate=true`;
     const request = new Request(oneInchAproveDataUrl, {
       method: "GET",
       headers: {
