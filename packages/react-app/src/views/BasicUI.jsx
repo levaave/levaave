@@ -244,21 +244,22 @@ function BasicUI(props) {
 
   const leverage = async () => {
     // console.log("user", userAddress);
-    const collateralValueInWei = ethers.utils.parseEther(collateralAmount);
-    if (!(await isCollateralApproved("", collateralAmount))) {
-      await approveCollateral(collateralAmount);
+    let convertedCollateral = (parseFloat(collateralAmount) * 2).toString();
+    const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
+    if (!(await isCollateralApproved("", convertedCollateral))) {
+      await approveCollateral(convertedCollateral);
     }
     if (!(await isCreditDelegated("", "10000000"))) {
       const valueToDelegate = ethers.utils.parseEther("10000000");
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
-
+    let amountFor1Inch = ethers.utils.parseUnits((parseFloat(convertedCollateral) * 1.5).toString()).toString();
     let approveData = await getApprove1inchData(selectedCollateralCurrencyType.value);
     console.log(approveData);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
-      ethers.utils.parseUnits("3").toString(),
+      amountFor1Inch,
       ourContractAddress,
       maximumSlippageApproved,
     );
