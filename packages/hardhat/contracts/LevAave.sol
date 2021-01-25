@@ -27,6 +27,7 @@ contract LevAave is FlashLoanReceiverBase {
         uint256 collateralAmount;
         bool success;
         bytes oneInchData;
+        uint256 leverage;
     }
 
     function executeOperation(
@@ -46,12 +47,13 @@ contract LevAave is FlashLoanReceiverBase {
             slot.apositionAsset,
             slot.operation,
             slot.collateralAmount,
-            slot.oneInchData
-        ) = abi.decode(params, (address, address, address, uint256, uint256, bytes));
+            slot.oneInchData,
+            slot.leverage
+        ) = abi.decode(params, (address, address, address, uint256, uint256, bytes, uint256));
         //open long position
         if (slot.operation == 0) {
             // transfer collateral from user to contract
-            IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.div(2));
+            IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.div(slot.leverage));
             // update collateral balance
             slot.balance = IERC20(slot.asset).balanceOf(address(this));
             // approve for 1inch
@@ -133,7 +135,6 @@ contract LevAave is FlashLoanReceiverBase {
             if (IERC20(slot.asset).allowance(address(this), address(pool)) < slot.amount) {
                 IERC20(slot.asset).approve(address(pool), uint256(-1));
             }
-            console.log("balanceclose", slot.amount);
             // first repay the debt of the user using the flashloan funds
             pool.repay(slot.asset, slot.amount, 2, slot.sender);
             // transfer atoken from user to contract
@@ -172,7 +173,8 @@ contract LevAave is FlashLoanReceiverBase {
         uint256 amount,
         uint256 operation,
         uint256 collateralAmount,
-        bytes calldata oneInchData
+        bytes calldata oneInchData,
+        uint256 leverage
     ) public {
         address[] memory assets = new address[](1);
         assets[0] = loanAsset;
@@ -192,7 +194,7 @@ contract LevAave is FlashLoanReceiverBase {
 
         address onBehalfOf = address(this);
         bytes memory params =
-            abi.encode(msg.sender, positionAsset, apositionAsset, operation, collateralAmount, oneInchData);
+            abi.encode(msg.sender, positionAsset, apositionAsset, operation, collateralAmount, oneInchData, leverage);
         uint16 referralCode = 0;
 
         LENDING_POOL.flashLoan(address(this), assets, amounts, modes, onBehalfOf, params, referralCode);

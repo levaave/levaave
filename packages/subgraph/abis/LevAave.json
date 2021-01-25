@@ -116,6 +116,11 @@
         "internalType": "bytes",
         "name": "oneInchData",
         "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "leverage",
+        "type": "uint256"
       }
     ],
     "name": "myFlashLoanCall",
