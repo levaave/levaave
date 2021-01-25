@@ -4,11 +4,8 @@ import { Row, Col, Input, Form, Label, Button } from "reactstrap";
 import Select from "react-select";
 import flashloancontract from "../contracts/LevAave.address.js";
 import { useUserAddress } from "eth-hooks";
-// import { useAsync, IfPending, IfFulfilled, IfRejected } from "react-async";
 import { Layout, Radio } from "antd";
-// import { Address, Balance } from "../components";
 import { ethers } from "ethers";
-
 import abi from "../contracts/LevAave.abi";
 import { debtTokenAbi } from "./debtTokenABI";
 import { iErc20Abi } from "./IERC20ABI";
@@ -19,6 +16,7 @@ import {
   get1InchQuote,
   get1InchSwapData,
 } from "../helpers/abiHelpers";
+import "./styles.scss"
 
 const { Header, Content, Footer } = Layout;
 
@@ -243,8 +241,8 @@ function BasicUI(props) {
   };
 
   const leverage = async () => {
-    let leverage = 2; // 1 = X2, 2 = X3, 3 = X4
-    let convertedCollateral = (parseFloat(collateralAmount) * leverage).toString();
+    // console.log("user", userAddress);
+    let convertedCollateral = (parseFloat(collateralAmount) * 2).toString();
     const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
     if (!(await isCollateralApproved("", convertedCollateral))) {
       await approveCollateral(convertedCollateral);
@@ -254,6 +252,8 @@ function BasicUI(props) {
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
     let amountFor1Inch = ethers.utils.parseUnits((parseFloat(convertedCollateral) * 1.5).toString()).toString();
+    let approveData = await getApprove1inchData(selectedCollateralCurrencyType.value);
+    console.log(approveData);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
@@ -271,18 +271,157 @@ function BasicUI(props) {
       0,
       0,
       swapData.tx.data,
-      leverage,
+      approveData.data,
     );
     await tx.wait();
   };
 
   return (
     <Layout>
-      <Header>
-        <div style={{ width: "100%", height: "100%", color: "white" }}>Prototype 1</div>
+      <Header className="header-levaave">
+        <div className="header-main-text">LevAave</div>
       </Header>
-      <Content>
-        <div style={{ width: "100%", height: "500px" }}>
+      <Content className="main-background">
+        <div className="main-div">
+          {/* Header of the swap Box */}
+          <div className="swap-page-header-div">
+            <div className="swap-page-header">
+              <div className="swap-page-header-text"> Flash Loan Swap </div>
+              <div className="swap-page-header-setting">
+                <button className="setting-icon-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="setting-svg"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Inputs to be taken and slippage  */}
+          <div className="swap-page-body">
+            <div className="swap-page-grid">
+
+              {/* Collateral BOX */}
+              <div className="swap-page-collateral-loan-div">
+                <div className="swap-page-input-div">
+                  
+                  {/* Input Collateral Label */}
+                  <div className="swap-page-input-label-div">
+                    <div className="swap-page-input-label-text-div">
+                      <div className="swap-page-input-label-text">
+                        Collateral
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Input Collateral Body */}
+                  <div className="swap-page-input-body">
+                    <input className="swap-page-input-body-input" inputmode="decimal" title="Token Amount" autocomplete="off" autocorrect="off" type="text" pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.0" minlength="1" maxlength="79" spellcheck="false"></input>
+                    <button className="swap-page-input-body-button">
+                      <span className="swap-page-input-body-button-main-span">
+                        {/* <img className="swap-page-input-body-button-img"></img> */}
+                        <span className="swap-page-input-body-button-text"> WETH </span>
+                        <svg width="12" height="7" viewBox="0 0 12 7" fill="none" class="swap-page-input-body-button-text-svg"><path d="M0.97168 1L6.20532 6L11.439 1" stroke="#AEAEAE"></path></svg>
+                      </span>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Arrow to show whats being borrowed and leveragead */}
+              {/* <div className="swap-page-arrow-main-div">
+                <div className="swap-page-arrow-div">
+                  <div className="swap-page-arrow">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3C5CB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                  </div>
+                </div>
+              </div> */}
+
+              {/* Position Short or Long */}
+              <div className="postion-leverage-div">
+
+                {/* Position */}
+                <div className="position-div">
+                  <div className="position-label-div">
+                    Position: 
+                  </div>
+                  <div className="position-box-active">
+                    Long
+                  </div>
+                  <div className="position-box">
+                    Short
+                  </div>
+                </div>
+
+                <div className="leverage-div">
+                  <div className="leverage-label-div">
+                    Leverage: 
+                  </div>
+                  <div className="leverage-box">
+                    2x
+                  </div>
+                  <div className="leverage-box-active">
+                    3x
+                  </div>
+                  <div className="leverage-box">
+                    4x
+                  </div>
+                </div>
+              </div>
+
+              {/* Leverage box  */}
+              <div className="swap-page-collateral-loan-div">
+                <div className="swap-page-input-div">
+                  
+                  {/* Input Leverage Label */}
+                  <div className="swap-page-input-label-div">
+                    <div className="swap-page-input-label-text-div">
+                      <div className="swap-page-input-label-text">
+                        Leverage Asset
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Input Leverage Body */}
+                  <div className="swap-page-input-body">
+                    <input className="swap-page-input-body-input" inputmode="decimal" title="Token Amount" autocomplete="off" autocorrect="off" type="text" pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.0" minlength="1" maxlength="79" spellcheck="false"></input>
+                    <button className="swap-page-input-body-button">
+                      <span className="swap-page-input-body-button-main-span">
+                        {/* <img className="swap-page-input-body-button-img"></img> */}
+                        <span className="swap-page-input-body-button-text"> LINK </span>
+                        <svg width="12" height="7" viewBox="0 0 12 7" fill="none" class="swap-page-input-body-button-text-svg"><path d="M0.97168 1L6.20532 6L11.439 1" stroke="#AEAEAE"></path></svg>
+                      </span>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Slippage Tollerance Div */}
+              <div className="slippage-tolerance-parent-div">
+                <div className="slippage-tolerance-grid-div">
+                  <div className="slippage-tolerance-div">
+                    <div className="slippage-tolerance-label">
+                      Slippage Tolerance
+                    </div>
+                    <div className="slippage-tolerance-percentage">
+                      1 %
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Final Leverage Call Button  */}
+            <div style={{ marginTop:"1rem"}}>
+              <button className="levaave-button">
+                  Flash - Leverage
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* <div style={{ width: "100%", height: "100%" }}>
           <Row>
             <Col sm={3}></Col>
             <Col sm={6}>
@@ -330,8 +469,6 @@ function BasicUI(props) {
                     <Input
                       size={"lg"}
                       onChange={e => {
-                        // let valueInWei = ethers.utils.parseEther();
-                        // updateCollateralAmount(e.target.value);
                         updateCollateralAmountAndGetQuote(e.target.value);
                       }}
                       value={collateralAmount}
@@ -342,30 +479,20 @@ function BasicUI(props) {
                       size={"lg"}
                       onChange={e => {
                         updateLeverageAmountAndGetQuote(e.target.value);
-                        // let valueInWei = ethers.utils.parseEther();
-                        // updateLeverageAmount(e.target.value);
                       }}
                       value={leverageAmount}
                     />
                     <br />
-                    {/* <Label>Leverage Multiplier</Label>
-                    <Input size={"lg"} onChange={e => updateLeverageMultiplier(e.target.value)
-                      value={}
-                    } /> */}
                     <br />
                     <Button onClick={leverage}>Submit </Button>
                   </Form>
-                  {/* <Select /> */}
                 </div>
               )}
             </Col>
             <Col sm={3}></Col>
           </Row>
-        </div>
+        </div> */}
       </Content>
-      <Footer style={{ width: "100%", height: "40px", color: "white", backgroundColor: "black" }}>
-        Reach out to us here.
-      </Footer>
     </Layout>
   );
 }

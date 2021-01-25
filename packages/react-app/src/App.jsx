@@ -21,6 +21,7 @@ import { formatEther } from "@ethersproject/units";
 import { Transactor } from "./helpers";
 
 import BasicUI from "./views/BasicUI";
+import NewUI from "./views/NewUI";
 
 //import Hints from "./Hints";
 /*
@@ -149,10 +150,33 @@ function App(props) {
               Trial
             </Link>
           </Menu.Item>
+          <Menu.Item key="v1">
+            <Link
+              onClick={() => {
+                setRoute("v1");
+              }}
+              to="/v1"
+            >
+              v1
+            </Link>
+          </Menu.Item>
         </Menu>
         <Switch>
           <Route exact path="/trial">
             <BasicUI
+              address={address}
+              userProvider={userProvider}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              // yourLocalBalance={yourLocalBalance}
+              // price={price}
+              // tx={tx}
+              // writeContracts={writeContracts}
+              // readContracts={readContracts}
+            />
+          </Route>
+          <Route exact path="/v1">
+            <NewUI
               address={address}
               userProvider={userProvider}
               mainnetProvider={mainnetProvider}

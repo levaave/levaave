@@ -118,9 +118,9 @@
         "type": "bytes"
       },
       {
-        "internalType": "bytes",
-        "name": "oneInchApprove",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "leverage",
+        "type": "uint256"
       }
     ],
     "name": "myFlashLoanCall",
