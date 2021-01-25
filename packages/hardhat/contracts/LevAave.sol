@@ -127,6 +127,34 @@ contract LevAave is FlashLoanReceiverBase {
             IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.add(premiums[0]));
         }
 
+        // close short position
+        if (slot.operation == 3) {
+            // if no aave allowance, approve
+            if (IERC20(slot.asset).allowance(address(this), address(pool)) < slot.amount) {
+                IERC20(slot.asset).approve(address(pool), uint256(-1));
+            }
+            console.log("balanceclose", slot.amount);
+            // first repay the debt of the user using the flashloan funds
+            pool.repay(slot.asset, slot.amount, 2, slot.sender);
+            // transfer atoken from user to contract
+            uint256 collateralBalance = IERC20(slot.apositionAsset).balanceOf(slot.sender);
+            IERC20(slot.apositionAsset).transferFrom(slot.sender, address(this), collateralBalance);
+            // transform atoken in token
+            pool.withdraw(slot.positionAsset, collateralBalance, address(this));
+            // update balance
+            slot.balance = IERC20(slot.positionAsset).balanceOf(address(this));
+            // approve for 1inch
+            if (IERC20(slot.positionAsset).allowance(address(this), address(oneInch)) < slot.balance) {
+                IERC20(slot.positionAsset).approve(address(oneInch), uint256(-1));
+            }
+            // 1inch trade
+            (slot.success, ) = oneInch.call(slot.oneInchData);
+            require(slot.success, "1inch call failed");
+            // send collateral back to user
+            slot.balance = IERC20(slot.asset).balanceOf(address(this));
+            IERC20(slot.asset).transfer(slot.sender, slot.balance - slot.amount.add(premiums[0]));
+        }
+
         // necessary to repay the loan
         for (uint256 i = 0; i < assets.length; i++) {
             uint256 amountOwing = amounts[i].add(premiums[i]);
@@ -153,7 +181,7 @@ contract LevAave is FlashLoanReceiverBase {
         if (operation == 0 || operation == 2) {
             amounts[0] = amount;
         }
-        if (operation == 1) {
+        if (operation == 1 || operation == 3) {
             uint256 debt = IERC20(debtAsset).balanceOf(msg.sender);
             amounts[0] = debt;
         }
