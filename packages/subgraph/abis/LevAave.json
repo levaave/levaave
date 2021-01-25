@@ -116,11 +116,6 @@
         "internalType": "bytes",
         "name": "oneInchData",
         "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "oneInchApprove",
-        "type": "bytes"
       }
     ],
     "name": "myFlashLoanCall",

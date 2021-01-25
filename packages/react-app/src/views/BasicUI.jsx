@@ -254,8 +254,6 @@ function BasicUI(props) {
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
     let amountFor1Inch = ethers.utils.parseUnits((parseFloat(convertedCollateral) * 1.5).toString()).toString();
-    let approveData = await getApprove1inchData(selectedCollateralCurrencyType.value);
-    console.log(approveData);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
@@ -273,7 +271,6 @@ function BasicUI(props) {
       0,
       0,
       swapData.tx.data,
-      approveData.data,
     );
     await tx.wait();
   };
