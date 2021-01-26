@@ -60,7 +60,6 @@ function NewUI(props) {
   const [leverageMultiplier, updateLeverageMultiplier] = useState(2);
   const [isSelectingCollateralCurrency, updateIsSelectingCollateralCurrency] = useState(false);
   const [isSelectingLeverageCurrency, updateIsSelectingLeverageCurrency] = useState(false);
-
   const [selectedCollateralCurrencyType, updateSelectedCollateralCurrencyType] = useState({
     label: "WETH",
     value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -76,7 +75,7 @@ function NewUI(props) {
   //   { label: "LINK", value: "0x514910771AF9Ca656af840dff83E8264EcF986CA" },
   //   { label: "UNI", value: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984" },
   // ];
-  const aaveContractAddress = {
+  const aTokensAddress = {
     WETH: "0x030bA81f1c18d280636F32af80b9AAd02Cf0854e",
     LINK: "0xa06bC25B5805d5F8d82847D191Cb4Af5A3e873E0",
   };
@@ -184,7 +183,6 @@ function NewUI(props) {
 
   //* --- form values ----
   const onChangeLeverageType = value => {
-    debugger;
     updateLeverageType(value);
   };
 
@@ -193,16 +191,6 @@ function NewUI(props) {
   };
   const updateContractForSelectedCollateralCurrencyType = tokenAddress => {
     collateralTokenContract = new ethers.Contract(tokenAddress, iErc20Abi, signer);
-  };
-  const get1inchData = () => {
-    let approvalData = getApprove1inchData(selectedCollateralCurrencyType.value);
-    let swapData = get1InchSwapData(
-      selectedCollateralCurrencyType.value,
-      selectedLeverageCurrencyType.value,
-      collateralAmount,
-      ourContractAddress,
-      maximumSlippageApproved,
-    );
   };
 
   const updateLeverageAmountAndGetQuote = async amount => {
@@ -246,9 +234,17 @@ function NewUI(props) {
     updateLeverageAmount(quotedLeverageAmountInWei);
   };
 
-  const leverage = async () => {
-    // console.log("user", userAddress);
-    let convertedCollateral = (parseFloat(collateralAmount) * 2).toString();
+  const execute = () => {
+    if (leverageType === "long") {
+      leverageLong();
+    } else if (leverageType === "short") {
+      leverageShort();
+    }
+  };
+
+  const leverageLong = async () => {
+    let convertedCollateral = (parseFloat(collateralAmount) * leverageMultiplier).toString();
+    // console.log("convertedCollateral", convertedCollateral);
     const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
     if (!(await isCollateralApproved("", convertedCollateral))) {
       await approveCollateral(convertedCollateral);
@@ -257,9 +253,13 @@ function NewUI(props) {
       const valueToDelegate = ethers.utils.parseEther("10000000");
       await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
     }
-    let amountFor1Inch = ethers.utils.parseUnits((parseFloat(convertedCollateral) * 1.5).toString()).toString();
-    let approveData = await getApprove1inchData(selectedCollateralCurrencyType.value);
-    console.log(approveData);
+    // console.log("convertedCollateral", convertedCollateral);
+    // console.log("collateralAmount", collateralAmount);
+    // console.log("levmul", leverageMultiplier);
+    let amountFor1Inch = ethers.utils
+      .parseUnits((parseFloat(convertedCollateral) + parseFloat(collateralAmount)).toString())
+      .toString();
+    console.log("amountFor1Inch", amountFor1Inch);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
@@ -267,17 +267,55 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    console.log("collvaluewei", ethers.utils.formatUnits(collateralValueInWei));
+    // console.log("collvaluewei", ethers.utils.formatUnits(collateralValueInWei));
+    // console.log("levmulti", leverageMultiplier);
     const tx = await contract.myFlashLoanCall(
       "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       selectedLeverageCurrencyType.value,
-      aaveContractAddress[selectedLeverageCurrencyType.label],
+      aTokensAddress[selectedLeverageCurrencyType.label],
       "0x0000000000000000000000000000000000000000",
       collateralValueInWei,
       0,
       0,
       swapData.tx.data,
-      approveData.data,
+      leverageMultiplier,
+    );
+    await tx.wait();
+  };
+
+  const leverageShort = async () => {
+    let convertedCollateral = (parseFloat(collateralAmount) * leverageMultiplier).toString();
+    console.log("convertedCollateral", convertedCollateral);
+    const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
+    if (!(await isCollateralApproved("", convertedCollateral))) {
+      await approveCollateral(convertedCollateral);
+    }
+    if (!(await isCreditDelegated("", "10000000"))) {
+      const valueToDelegate = ethers.utils.parseEther("10000000");
+      await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
+    }
+    let shortCollateral = ethers.utils.parseUnits((parseFloat(leverageAmount) * 2).toString());
+    console.log("11111", shortCollateral.toString());
+    let swapData = await get1InchSwapData(
+      selectedLeverageCurrencyType.value,
+      selectedCollateralCurrencyType.value,
+      shortCollateral.toString(),
+      ourContractAddress,
+      maximumSlippageApproved,
+    );
+    console.log("collvaluewei", ethers.utils.formatUnits(collateralValueInWei));
+
+    console.log("shortCollateral", ethers.utils.formatUnits(shortCollateral));
+    const tx = await contract.myFlashLoanCall(
+      selectedLeverageCurrencyType.value, // asset to short
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // collateral
+      "0x0000000000000000000000000000000000000000",
+      "0x0000000000000000000000000000000000000000",
+      shortCollateral, // amount asset to short
+      2, // operation
+      collateralValueInWei, //collateral amount
+      swapData.tx.data,
+      leverageMultiplier,
     );
     await tx.wait();
   };
@@ -389,20 +427,20 @@ function NewUI(props) {
                   <div className="leverage-div">
                     <div className="leverage-label-div">Leverage:</div>
                     <div
-                      className={clsx({ "leverage-box": true, active: leverageMultiplier === 2 })}
-                      onClick={() => updateLeverageMultiplier(2)}
+                      className={clsx({ "leverage-box": true, active: leverageMultiplier === 1 })}
+                      onClick={() => updateLeverageMultiplier(1)}
                     >
                       2x
                     </div>
                     <div
-                      className={clsx({ "leverage-box": true, active: leverageMultiplier === 3 })}
-                      onClick={() => updateLeverageMultiplier(3)}
+                      className={clsx({ "leverage-box": true, active: leverageMultiplier === 2 })}
+                      onClick={() => updateLeverageMultiplier(2)}
                     >
                       3x
                     </div>
                     <div
-                      className={clsx({ "leverage-box": true, active: leverageMultiplier === 4 })}
-                      onClick={() => updateLeverageMultiplier(4)}
+                      className={clsx({ "leverage-box": true, active: leverageMultiplier === 3 })}
+                      onClick={() => updateLeverageMultiplier(3)}
                     >
                       4x
                     </div>
@@ -470,7 +508,9 @@ function NewUI(props) {
 
               {/* Final Leverage Call Button  */}
               <div style={{ marginTop: "1rem" }}>
-                <button className="levaave-button">Flash - Leverage</button>
+                <button className="levaave-button" onClick={execute}>
+                  Flash - Leverage
+                </button>
               </div>
             </div>
           </div>

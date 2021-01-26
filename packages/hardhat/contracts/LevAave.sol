@@ -1,5 +1,7 @@
 pragma solidity 0.6.12;
 
+import "hardhat/console.sol";
+
 import {FlashLoanReceiverBase} from "./utils/FlashLoanReceiverBase.sol";
 import {ILendingPool} from "./interfaces/ILendingPool.sol";
 import {
@@ -56,6 +58,7 @@ contract LevAave is FlashLoanReceiverBase {
             IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.div(slot.leverage));
             // update collateral balance
             slot.balance = IERC20(slot.asset).balanceOf(address(this));
+            console.log("collateralBalance", slot.balance);
             // approve for 1inch
             if (IERC20(slot.asset).allowance(address(this), address(oneInch)) < slot.balance) {
                 IERC20(slot.asset).approve(address(oneInch), uint256(-1));
@@ -106,11 +109,9 @@ contract LevAave is FlashLoanReceiverBase {
         if (slot.operation == 2) {
             // transfer collateral from user to contract
             IERC20(slot.positionAsset).transferFrom(slot.sender, address(this), slot.collateralAmount);
-            // update balance
-            slot.balance = IERC20(slot.positionAsset).balanceOf(address(this));
             // 1inch approve
-            if (IERC20(slot.positionAsset).allowance(address(this), address(oneInch)) < slot.balance) {
-                IERC20(slot.positionAsset).approve(address(oneInch), uint256(-1));
+            if (IERC20(slot.asset).allowance(address(this), address(oneInch)) < slot.amount) {
+                IERC20(slot.asset).approve(address(oneInch), uint256(-1));
             }
             // 1inch trade
             (slot.success, ) = oneInch.call(slot.oneInchData);
