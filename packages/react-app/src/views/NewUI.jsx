@@ -19,6 +19,8 @@ import {
 import "./NewUI.styles.scss";
 import clsx from "clsx";
 import { debounce } from "debounce";
+import UserData from "./UserData";
+
 const { Header, Content, Footer } = Layout;
 
 function NewUI(props) {
@@ -65,8 +67,8 @@ function NewUI(props) {
     value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   });
   const [selectedLeverageCurrencyType, updateSelectedLeverageCurrencyType] = useState({
-    label: "Choose an option",
-    value: null,
+    label: "LINK",
+    value: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
   });
   const userCurrencyOptions = [{ label: "WETH", value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" }];
   const [tokenOptionsForLeveraging, updateTokenOptionsForLeveraging] = useState([]);
@@ -95,6 +97,7 @@ function NewUI(props) {
         selectDropdownList.push(option);
       });
       updateTokenOptionsForLeveraging(selectDropdownList);
+
       updateIsLoading(false);
     };
     isFetchingInfo();
@@ -183,6 +186,7 @@ function NewUI(props) {
 
   //* --- form values ----
   const onChangeLeverageType = value => {
+    // debugger;
     updateLeverageType(value);
   };
 
@@ -515,6 +519,7 @@ function NewUI(props) {
             </div>
           </div>
 
+          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} />
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}
