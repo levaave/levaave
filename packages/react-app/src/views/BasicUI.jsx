@@ -243,7 +243,7 @@ function BasicUI(props) {
   };
 
   const leverage = async () => {
-    let leverage = 2; // 1 = X2, 2 = X3, 3 = X4
+    let leverage = 3; // 1 = X2, 2 = X3, 3 = X4
     let convertedCollateral = (parseFloat(collateralAmount) * leverage).toString();
     const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
     if (!(await isCollateralApproved("", convertedCollateral))) {
