@@ -70,16 +70,33 @@ function NewUI(props) {
     label: "LINK",
     value: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
   });
-  const userCurrencyOptions = [{ label: "WETH", value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" }];
+  const [reserveTokensAddresses, updateReserveTokensAddresses] = useState();
+
   const [tokenOptionsForLeveraging, updateTokenOptionsForLeveraging] = useState([]);
-  // [
-  //   { label: "WETH", value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" },
-  //   { label: "LINK", value: "0x514910771AF9Ca656af840dff83E8264EcF986CA" },
-  //   { label: "UNI", value: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984" },
-  // ];
+
   const aTokensAddress = {
-    WETH: "0x030bA81f1c18d280636F32af80b9AAd02Cf0854e",
+    AAVE: "0xFFC97d72E13E01096502Cb8Eb52dEe56f74DAD7B",
+    BAT: "0x05Ec93c0365baAeAbF7AefFb0972ea7ECdD39CF1",
+    BUSD: "0xA361718326c15715591c299427c62086F69923D9",
+    CRV: "0x8dAE6Cb04688C62d939ed9B68d32Bc62e49970b1",
+    DAI: "0x028171bCA77440897B824Ca71D1c56caC55b68A3",
+    ENJ: "0xaC6Df26a590F08dcC95D5a4705ae8abbc88509Ef",
+    GUSD: "0xD37EE7e4f452C6638c96536e68090De8cBcdb583",
+    KNC: "0x39C6b3e42d6A679d7D776778Fe880BC9487C2EDA",
     LINK: "0xa06bC25B5805d5F8d82847D191Cb4Af5A3e873E0",
+    MANA: "0xa685a61171bb30d4072B338c80Cb7b2c865c873E",
+    MKR: "0xc713e5E149D5D0715DcD1c156a020976e7E56B88",
+    REN: "0xCC12AbE4ff81c9378D670De1b57F8e0Dd228D77a",
+    SNX: "0x35f6B052C598d933D69A4EEC4D04c73A191fE6c2",
+    SUSD: "0x6C5024Cd4F8A59110119C56f8933403A539555EB",
+    TUSD: "0x101cc05f4A51C0319f570d5E146a8C625198e636",
+    UNI: "0xB9D7CB55f463405CDfBe4E90a6D2Df01C2B92BF1",
+    USDC: "0xBcca60bB61934080951369a648Fb03DF4F96263C",
+    USDT: "0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811",
+    WBTC: "0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656",
+    WETH: "0x030bA81f1c18d280636F32af80b9AAd02Cf0854e",
+    YFI: "0x5165d24277cD063F5ac44Efd447B27025e888f37",
+    ZRX: "0xDf7FF54aAcAcbFf42dfe29DD6144A69b629f8C9e",
   };
 
   const [listOfSupportedTokensFromAAVE, updateListOfSupportedTokensFromAAVE] = useState([]);
@@ -103,24 +120,19 @@ function NewUI(props) {
     isFetchingInfo();
   }, []);
 
-  let variableDebtTokenContract = new ethers.Contract(
-    "0xF63B34710400CAd3e044cFfDcAb00a0f32E33eCf",
-    debtTokenAbi,
-    signer,
-  );
-  // console.log(debtTokenAbi);
-  let collateralTokenContract = new ethers.Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", iErc20Abi, signer);
-
   const userAddress = useUserAddress(userProvider);
 
   //* ---- credit delegation -----
-  const getDelegationApproval = async (tokenAddress, amount) => {
+  const getDelegationApproval = async tokenAddress => {
     try {
-      // debugger;
-      const borrower = ourContractAddress;
-      const amountInWei = ethers.utils.parseUnits("100000000000");
-      let r = await variableDebtTokenContract.approveDelegation(borrower, amountInWei);
-      console.log(r);
+      const reserveAddresses = await dataProviderContract.getReserveTokensAddresses(tokenAddress);
+      const variableDebtTokenContract = new ethers.Contract(
+        reserveAddresses.variableDebtTokenAddress,
+        debtTokenAbi,
+        signer,
+      );
+      const amountInWei = ethers.utils.parseUnits("1000000000000000");
+      let r = await variableDebtTokenContract.approveDelegation(ourContractAddress, amountInWei);
       // get relevant contract depending upon token
     } catch (ex) {
       console.log(ex);
@@ -129,12 +141,18 @@ function NewUI(props) {
 
   const isCreditDelegated = async (tokenAddress, amount) => {
     try {
-      // debugger;
-      const borrower = ourContractAddress;
+      const reserveAddresses = await dataProviderContract.getReserveTokensAddresses(tokenAddress);
+      const variableDebtTokenContract = new ethers.Contract(
+        reserveAddresses.variableDebtTokenAddress,
+        debtTokenAbi,
+        signer,
+      );
       const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
-      const totalDelegatedCreditAllowance = await variableDebtTokenContract.borrowAllowance(userAddress, borrower);
-      console.log("delegated", totalDelegatedCreditAllowance, "required", amountInWei);
+      const totalDelegatedCreditAllowance = await variableDebtTokenContract.borrowAllowance(
+        userAddress,
+        ourContractAddress,
+      );
       if (totalDelegatedCreditAllowance >= amountInWei) {
         return true;
       }
@@ -147,12 +165,10 @@ function NewUI(props) {
   //* ---- erc approvals ----
   const isCollateralApproved = async (tokenAddress, amount) => {
     try {
-      // debugger;
-      const beneficiary = ourContractAddress;
+      const collateralTokenContract = new ethers.Contract(tokenAddress, iErc20Abi, signer);
       const amountInWei = ethers.utils.parseEther(amount);
       // get relevant contract depending upon token
-      const totalApproval = await collateralTokenContract.allowance(userAddress, beneficiary);
-      console.log("totalApproval", totalApproval, "required", amountInWei);
+      const totalApproval = await collateralTokenContract.allowance(userAddress, ourContractAddress);
       if (totalApproval.gte(amountInWei)) {
         return true;
       }
@@ -162,16 +178,12 @@ function NewUI(props) {
     }
   };
 
-  const approveCollateral = async amount => {
-    // debugger;
+  const approveCollateral = async tokenAddress => {
     try {
-      console.log("approvingCollateral");
-      const beneficiary = ourContractAddress;
-      const amountInWei = ethers.utils.parseEther("100000000000");
+      const collateralTokenContract = new ethers.Contract(tokenAddress, iErc20Abi, signer);
+      const amountInWei = ethers.utils.parseEther("1000000000000000");
       // get relevant contract depending upon token
-      let result = await collateralTokenContract.approve(beneficiary, amountInWei);
-      // debugger;
-      console.log(result);
+      let result = await collateralTokenContract.approve(ourContractAddress, amountInWei);
       if (result.hash) return true;
       else return false;
     } catch (e) {
@@ -188,13 +200,6 @@ function NewUI(props) {
   const onChangeLeverageType = value => {
     // debugger;
     updateLeverageType(value);
-  };
-
-  const updateContractForSelectedleverageCurrencyType = tokenAddress => {
-    variableDebtTokenContract = new ethers.Contract(tokenAddress, debtTokenAbi, signer);
-  };
-  const updateContractForSelectedCollateralCurrencyType = tokenAddress => {
-    collateralTokenContract = new ethers.Contract(tokenAddress, iErc20Abi, signer);
   };
 
   const updateLeverageAmountAndGetQuote = async amount => {
@@ -248,22 +253,16 @@ function NewUI(props) {
 
   const leverageLong = async () => {
     let convertedCollateral = (parseFloat(collateralAmount) * leverageMultiplier).toString();
-    // console.log("convertedCollateral", convertedCollateral);
     const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
-    if (!(await isCollateralApproved("", convertedCollateral))) {
-      await approveCollateral(convertedCollateral);
+    if (!(await isCollateralApproved(selectedCollateralCurrencyType.value, "1000000"))) {
+      await approveCollateral(selectedCollateralCurrencyType.value);
     }
-    if (!(await isCreditDelegated("", "10000000"))) {
-      const valueToDelegate = ethers.utils.parseEther("10000000");
-      await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
+    if (!(await isCreditDelegated(selectedCollateralCurrencyType.value, "1000000"))) {
+      await getDelegationApproval(selectedCollateralCurrencyType.value);
     }
-    // console.log("convertedCollateral", convertedCollateral);
-    // console.log("collateralAmount", collateralAmount);
-    // console.log("levmul", leverageMultiplier);
     let amountFor1Inch = ethers.utils
       .parseUnits((parseFloat(convertedCollateral) + parseFloat(collateralAmount)).toString())
       .toString();
-    console.log("amountFor1Inch", amountFor1Inch);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
@@ -271,10 +270,8 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    // console.log("collvaluewei", ethers.utils.formatUnits(collateralValueInWei));
-    // console.log("levmulti", leverageMultiplier);
     const tx = await contract.myFlashLoanCall(
-      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
       aTokensAddress[selectedLeverageCurrencyType.label],
       "0x0000000000000000000000000000000000000000",
@@ -289,17 +286,14 @@ function NewUI(props) {
 
   const leverageShort = async () => {
     let convertedCollateral = (parseFloat(collateralAmount) * leverageMultiplier).toString();
-    console.log("convertedCollateral", convertedCollateral);
     const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
-    if (!(await isCollateralApproved("", convertedCollateral))) {
-      await approveCollateral(convertedCollateral);
+    if (!(await isCollateralApproved(selectedCollateralCurrencyType.value, "1000000"))) {
+      await approveCollateral(selectedCollateralCurrencyType.value);
     }
-    if (!(await isCreditDelegated("", "10000000"))) {
-      const valueToDelegate = ethers.utils.parseEther("10000000");
-      await getDelegationApproval(selectedCollateralCurrencyType, valueToDelegate);
+    if (!(await isCreditDelegated(selectedLeverageCurrencyType.value, "1000000"))) {
+      await getDelegationApproval(selectedLeverageCurrencyType.value);
     }
     let shortCollateral = ethers.utils.parseUnits((parseFloat(leverageAmount) * 2).toString());
-    console.log("11111", shortCollateral.toString());
     let swapData = await get1InchSwapData(
       selectedLeverageCurrencyType.value,
       selectedCollateralCurrencyType.value,
@@ -307,19 +301,16 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    console.log("collvaluewei", ethers.utils.formatUnits(collateralValueInWei));
-
-    console.log("shortCollateral", ethers.utils.formatUnits(shortCollateral));
     const tx = await contract.myFlashLoanCall(
       selectedLeverageCurrencyType.value, // asset to short
-      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // collateral
+      selectedCollateralCurrencyType.value, // collateral
       "0x0000000000000000000000000000000000000000",
       "0x0000000000000000000000000000000000000000",
       shortCollateral, // amount asset to short
       2, // operation
-      collateralValueInWei, //collateral amount
+      ethers.utils.parseEther(collateralAmount), //collateral amount
       swapData.tx.data,
-      leverageMultiplier,
+      0,
     );
     await tx.wait();
   };
@@ -519,7 +510,7 @@ function NewUI(props) {
             </div>
           </div>
 
-          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} />
+          {/* <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} /> */}
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}
@@ -529,9 +520,10 @@ function NewUI(props) {
           >
             <PopoverBody>
               <div className="dd-wrapper">
-                {userCurrencyOptions.map(option => {
+                {tokenOptionsForLeveraging.map(option => {
                   return (
                     <div
+                      key={option.value}
                       className="dd-option"
                       onClick={() => {
                         updateSelectedCollateralCurrencyType(option);
@@ -565,6 +557,7 @@ function NewUI(props) {
                 {tokenOptionsForLeveraging.map(option => {
                   return (
                     <div
+                      key={option.value}
                       className="dd-option"
                       onClick={() => {
                         updateSelectedLeverageCurrencyType(option);

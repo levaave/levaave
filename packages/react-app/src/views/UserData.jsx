@@ -59,7 +59,7 @@ function UserData(props) {
   };
 
   const getReserveTokens = async () => {
-    debugger;
+    // debugger;
     if (!reserveTokens && dataProviderContract) {
       // console.log("getting Reserve Tokens");
       let _reserveTokens = await dataProviderContract.getAllReservesTokens(); //.getReserveData("0x6B175474E89094C44Da98b954EedeAC495271d0F")//makeCall('getAddress', addressProviderContract, ["0x1"])
@@ -79,7 +79,7 @@ function UserData(props) {
       let _reserveData = await dataProviderContract.getReserveData(asset.tokenAddress);
       let _reserveConfigurationData = await dataProviderContract.getReserveConfigurationData(asset.tokenAddress);
       let _newAssetData = { ...asset, ..._reserveData, ..._reserveConfigurationData };
-      debugger;
+      // debugger;
       setAssetData(_newAssetData);
     }
   };
@@ -92,7 +92,7 @@ function UserData(props) {
         return el.symbol === liveAsset.label;
       })[0];
       let _data = await dataProviderContract.getUserReserveData(asset.tokenAddress, address);
-      debugger;
+      // debugger;
       setUserAssetData(_data);
     }
   };
@@ -126,7 +126,7 @@ function UserData(props) {
           _userAssetList[_symbol] = _newAsset;
         }
       }
-      debugger;
+      // debugger;
       setUserAssetList(_userAssetList);
     }
   };
