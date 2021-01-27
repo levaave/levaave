@@ -248,9 +248,9 @@ function UserData(props) {
                   <tr>
                     <th scope="row">{index + 1}</th>
                     <td>{tokenData.symbol}</td>
-                    <td>{tokenData.variable ? tokenData.variable.toString() : 0}</td>
-                    <td>{tokenData.stable ? tokenData.stable.toString() : 0}</td>
-                    <td>{tokenData.aToken ? tokenData.aToken.toString() : 0}</td>
+                    <td>{tokenData.variable ? ethers.utils.formatEther(tokenData.variable.toString()) : 0}</td>
+                    <td>{tokenData.stable ? ethers.utils.formatEther(tokenData.stable.toString()) : 0}</td>
+                    <td>{tokenData.aToken ? ethers.utils.formatEther(tokenData.aToken.toString()) : 0}</td>
                   </tr>
                 );
               })}
