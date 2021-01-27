@@ -126,8 +126,6 @@ contract LevAave is FlashLoanReceiverBase {
             pool.deposit(slot.positionAsset, slot.balance, slot.sender, 0);
             // borrow loaned asset on behalf of user
             pool.borrow(slot.asset, slot.amount.add(premiums[0]), 2, 0, slot.sender);
-            // transfer loan to pay back from user to contract
-            IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.add(premiums[0]));
         }
 
         // close short position

@@ -1,26 +1,24 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import "antd/dist/antd.css";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
-import { Menu } from "antd";
 import {
   useExchangePrice,
   useUserProvider,
-  useContractLoader,
-  useContractReader,
-  useEventListener,
-  useBalance,
-  useGasPrice,
+  // useContractLoader,
+  // useContractReader,
+  // useEventListener,
+  // useBalance,
+  // useGasPrice,
 } from "./hooks";
-import { Header, Account, Contract } from "./components";
-import { formatEther } from "@ethersproject/units";
-import { Transactor } from "./helpers";
+import { Header, Account } from "./components";
+// import { Transactor } from "./helpers";
 
-import BasicUI from "./views/BasicUI";
+// import BasicUI from "./views/BasicUI";
 import NewUI from "./views/NewUI";
 
 //import Hints from "./Hints";
@@ -56,7 +54,7 @@ if (DEBUG) console.log("📡 Connecting to Mainnet Ethereum");
 // const mainnetProvider = new InfuraProvider("mainnet",INFURA_ID);
 const mainnetProvider = new JsonRpcProvider("https://mainnet.infura.io/v3/" + INFURA_ID);
 // ( ⚠️ Getting "failed to meet quorum" errors? Check your INFURA_ID)
-console.log("window.location.hostname", window.location.hostname);
+// console.log("window.location.hostname", window.location.hostname);
 // 🏠 Your local provider is usually pointed at your local blockchain
 const localProviderUrl = "http://" + window.location.hostname + ":8545"; // for xdai: https://dai.poa.network
 // as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
@@ -65,7 +63,6 @@ if (DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
 function App(props) {
-  const gasPrice = useGasPrice("fast"); //1000000000 for xdai
   const [injectedProvider, setInjectedProvider] = useState();
   /* 💵 this hook will get the price of ETH from 🦄 Uniswap: */
   const price = useExchangePrice(mainnetProvider); //1 for xdai
@@ -105,7 +102,7 @@ function App(props) {
   //
 
   // The transactor wraps transactions and provides notificiations
-  const tx = Transactor(userProvider, gasPrice);
+  // const tx = Transactor(userProvider, gasPrice);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -122,14 +119,13 @@ function App(props) {
       loadWeb3Modal();
     }
   }, [loadWeb3Modal]);
-  const [route, setRoute] = useState("/");
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
 
       <BrowserRouter>
-        <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
+        {/* <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
           <Menu.Item key="/">
             <Link
               onClick={() => {
@@ -160,22 +156,9 @@ function App(props) {
               v1
             </Link>
           </Menu.Item>
-        </Menu>
+        </Menu> */}
         <Switch>
-          <Route exact path="/trial">
-            <BasicUI
-              address={address}
-              userProvider={userProvider}
-              mainnetProvider={mainnetProvider}
-              localProvider={localProvider}
-              // yourLocalBalance={yourLocalBalance}
-              // price={price}
-              // tx={tx}
-              // writeContracts={writeContracts}
-              // readContracts={readContracts}
-            />
-          </Route>
-          <Route exact path="/v1">
+          <Route exact path="/">
             <NewUI
               address={address}
               userProvider={userProvider}
@@ -187,26 +170,6 @@ function App(props) {
               // writeContracts={writeContracts}
               // readContracts={readContracts}
             />
-          </Route>
-          <Route exact path="/">
-            {/* <Contract
-              name="LevAave"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            /> */}
-
-            {/* Uncomment to display and interact with an external contract (DAI on mainnet):
-            <Contract
-              name="DAI"
-              customContract={mainnetDAIContract}
-              signer={userProvider.getSigner()}
-              provider={mainnetProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
-            */}
           </Route>
         </Switch>
       </BrowserRouter>

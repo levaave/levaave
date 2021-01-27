@@ -1,5 +1,5 @@
-import { AAVELendingPoolAddressProviderAbi } from "../abis/AAVELendingPoolAddressProvider";
-import { ethers } from "ethers";
+// import { AAVELendingPoolAddressProviderAbi } from "../abis/AAVELendingPoolAddressProvider";
+// import { ethers } from "ethers";
 
 export async function getListOfTokensSupportedByAAVE(contract) {
   try {
