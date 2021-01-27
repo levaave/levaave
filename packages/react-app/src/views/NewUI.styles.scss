@@ -1,25 +1,37 @@
 .header-levaave {
   background-color: rgb(44,47,54);
   padding: 0px;
-  border-bottom: 2px solid rgba(0,0,0,0.1)
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+  display: flex;
+  text-align: left;
 }
 
-.header-main-text {
-  width: 100%;
+.header-main-text-lev {
+  height: 100%; 
+  color: #20BB56;
+  font-size: 30px; 
+  text-align: left; 
+  margin-left: 10px;
+  font-family: monospace;
+
+}
+
+.header-main-text-aave {
   height: 100%; 
   color: white;
-  font-size: 20px; 
-  text-align: left; 
-  margin-left: 30px;
+  font-size: 25px; 
+  text-align: left;
+  margin-top: 6px;
+  font-weight: 800;
+  font-family: fantasy;
 }
 
 .main-background {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-top: 100px;
+  padding-top: 75px;
   -webkit-box-align: center;
-  align-items: center;
   flex: 1 1 0%;
   overflow: hidden auto;
   z-index: 1;
@@ -28,6 +40,7 @@
 
 .main-div {
   position: relative;
+  margin-left: 100px;
   max-width: 420px;
   width: 100%;
   background: rgb(33, 36, 41);
@@ -287,7 +300,7 @@
   min-width: 0px;
   font-weight: 500;
   font-size: 14px;
-  color: rgb(195, 197, 203);
+  color: #20BB56
 }
 
 .levaave-button {
@@ -307,20 +320,22 @@
   cursor: pointer;
   position: relative;
   z-index: 1;
-  background-color: rgba(21, 61, 111, 0.44);
-  color: rgb(109, 168, 255);
+  background-color: #1B432D;
+  color: #20BB56;
   font-size: 16px;
   font-weight: 500;
 }
 
 .position-div {
-  display: flex;
+  display: block;
   justify-content: left;
+  text-align: left;
 }
 
 .leverage-div {
-  display: flex;
+  display: block;
   justify-content: left;
+  text-align: left;
   margin-right: 16px;
 }
 
@@ -340,7 +355,7 @@
   font-weight: 500;
   font-size: 14px;
   color: #c3c5cb;
-  margin-left: 16px;
+  margin-left: 10px;
 }
 
 .postion-leverage-div {
@@ -353,25 +368,81 @@
 .position-box {
   display: table;
   font-size: 12px;
-  border: 2px solid rgba(21, 61, 111, 0.44);
-  color: rgb(109, 168, 255);
+  border: 2px solid #20BB56;
+  color: #20BB56;
   margin-left: 10px;
+  margin-top: 10px;
   padding: 3px 3px;
   border-radius: 5px;
   &.active{
-    background-color:  rgba(21, 61, 111, 0.44);
+    background-color:  #20BB56;
+    color: white
   }
 }
 
 .leverage-box {
   display: table;
   font-size: 12px;
-  border: 2px solid rgba(21, 61, 111, 0.44);
-  color: rgb(109, 168, 255);
-  margin-left: 10px;
+  border: 2px solid #20BB56;
+  color: #20BB56;
+  margin-right: 10px;
+  margin-top: 10px;
   padding: 3px 3px;
   border-radius: 8px;
   &.active{
-    background-color:  rgba(21, 61, 111, 0.44);
+    background-color:  #20BB56;
+    color: white;
   }
+}
+
+.custom-popover {
+  background-color: rgb(33, 36, 41);
+  border-radius: 25px;
+  position: absolute;
+  will-change: transform;
+  min-width: 450px;
+  top: 0px;
+  left: 160px;
+  transform: translate3d(22px, 141px, 0px);
+}
+
+.custom-inner-popover {
+  background-color: rgb(33, 36, 41);
+}
+
+.popover-body {
+  background: #212429;
+  border-radius: 25px;
+  color: white;
+}
+
+.dd-wrapper {
+  color: white;
+}
+
+.connect-button-div {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.connect-button {
+  height: 40px;
+    width: 100%;
+    text-align: center;
+    outline: none;
+    border: 1px solid transparent;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    background-color: #1B432D;
+    color: #20BB56;
+    font-size: 16px;
+    font-weight: 500;
 }
