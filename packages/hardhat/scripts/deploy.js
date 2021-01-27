@@ -4,6 +4,7 @@ const chalk = require("chalk");
 const { config, ethers } = require("hardhat");
 const { utils } = require("ethers");
 const R = require("ramda");
+const { erc20Abi } = require("./abi");
 
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
@@ -28,11 +29,51 @@ const main = async () => {
 
   //If you want to send value to an address from the deployer
 */
+
   const deployerWallet = ethers.provider.getSigner();
+  const deployerAddress = await deployerWallet.getAddress();
   await deployerWallet.sendTransaction({
     to: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     value: ethers.utils.parseEther("100"),
   });
+  await hre.network.provider.request({
+    method: "hardhat_impersonateAccount",
+    params: ["0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce"],
+  });
+  const signerDai = await ethers.provider.getSigner(
+    "0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce"
+  );
+  const dai = new ethers.Contract(
+    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    erc20Abi,
+    signerDai
+  );
+  await dai.transferFrom(
+    "0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce",
+    deployerAddress,
+    ethers.utils.parseUnits("10000")
+  );
+  await hre.network.provider.request({
+    method: "hardhat_stopImpersonatingAccount",
+    params: ["0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce"],
+  });
+  await hre.network.provider.request({
+    method: "hardhat_impersonateAccount",
+    params: ["0xf4dB4093dD8419B79FD4Ea39128da44699CFf3B4"],
+  });
+  const signerUni = await ethers.provider.getSigner(
+    "0xf4dB4093dD8419B79FD4Ea39128da44699CFf3B4"
+  );
+  const uni = new ethers.Contract(
+    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+    erc20Abi,
+    signerUni
+  );
+  await uni.transferFrom(
+    "0xf4dB4093dD8419B79FD4Ea39128da44699CFf3B4",
+    deployerAddress,
+    ethers.utils.parseUnits("5000")
+  );
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",

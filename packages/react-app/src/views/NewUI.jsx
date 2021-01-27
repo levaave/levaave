@@ -131,7 +131,7 @@ function NewUI(props) {
         debtTokenAbi,
         signer,
       );
-      const amountInWei = ethers.utils.parseUnits("1000000000000000");
+      const amountInWei = ethers.utils.parseUnits("100000000");
       let r = await variableDebtTokenContract.approveDelegation(ourContractAddress, amountInWei);
       // get relevant contract depending upon token
     } catch (ex) {
@@ -181,7 +181,7 @@ function NewUI(props) {
   const approveCollateral = async tokenAddress => {
     try {
       const collateralTokenContract = new ethers.Contract(tokenAddress, iErc20Abi, signer);
-      const amountInWei = ethers.utils.parseEther("1000000000000000");
+      const amountInWei = ethers.utils.parseEther("100000000");
       // get relevant contract depending upon token
       let result = await collateralTokenContract.approve(ourContractAddress, amountInWei);
       if (result.hash) return true;
