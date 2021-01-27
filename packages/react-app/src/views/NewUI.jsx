@@ -1,10 +1,9 @@
 import React, { useState, memo, useEffect } from "react";
-import { parseEther, formatEther } from "@ethersproject/units";
-import { Row, Col, Input, Form, Label, Button, Popover, PopoverBody } from "reactstrap";
-import Select from "react-select";
+import { Popover, PopoverBody } from "reactstrap";
+// import Select from "react-select";
 import flashloancontract from "../contracts/LevAave.address.js";
 import { useUserAddress } from "eth-hooks";
-import { Layout, Radio } from "antd";
+import { Layout } from "antd";
 import { ethers } from "ethers";
 import abi from "../contracts/LevAave.abi";
 import { debtTokenAbi } from "./debtTokenABI";
@@ -12,23 +11,24 @@ import { iErc20Abi } from "./IERC20ABI";
 import { abi as AAVEIDataProvider } from "../abis/AAVEProtocolDataProvider.json";
 import {
   getListOfTokensSupportedByAAVE,
-  getApprove1inchData,
+  // getApprove1inchData,
   get1InchQuote,
   get1InchSwapData,
 } from "../helpers/abiHelpers";
 import "./NewUI.styles.scss";
 import clsx from "clsx";
-import { debounce } from "debounce";
-import UserData from "./UserData";
+// import { debounce } from "debounce";
+// import UserData from "./UserData";
+import Positions from "./Positions";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 function NewUI(props) {
   const {
     // address,
     // mainnetProvider,
     userProvider,
-    localProvider,
+    // localProvider,
     // yourLocalBalance,
     // price,
     // tx,
@@ -40,8 +40,8 @@ function NewUI(props) {
   const ourContractAddress = flashloancontract;
   const signer = userProvider.getSigner();
   const AAVE_PROTOCOL_DATA_PROVIDER_ADDRESS = "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d";
-  const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
-  const PRICE_ORACLE = "0xa50ba011c48153de246e5192c8f9258a2ba79ca9";
+  // const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
+  // const PRICE_ORACLE = "0xa50ba011c48153de246e5192c8f9258a2ba79ca9";
   //* --- all constants ---
 
   //* --- all contract initializations ---
@@ -70,7 +70,6 @@ function NewUI(props) {
     label: "LINK",
     value: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
   });
-  const [reserveTokensAddresses, updateReserveTokensAddresses] = useState();
 
   const [tokenOptionsForLeveraging, updateTokenOptionsForLeveraging] = useState([]);
 
@@ -98,8 +97,6 @@ function NewUI(props) {
     YFI: "0x5165d24277cD063F5ac44Efd447B27025e888f37",
     ZRX: "0xDf7FF54aAcAcbFf42dfe29DD6144A69b629f8C9e",
   };
-
-  const [listOfSupportedTokensFromAAVE, updateListOfSupportedTokensFromAAVE] = useState([]);
 
   //* --- state variables ---
 
@@ -132,7 +129,7 @@ function NewUI(props) {
         signer,
       );
       const amountInWei = ethers.utils.parseUnits("100000000");
-      let r = await variableDebtTokenContract.approveDelegation(ourContractAddress, amountInWei);
+      await variableDebtTokenContract.approveDelegation(ourContractAddress, amountInWei);
       // get relevant contract depending upon token
     } catch (ex) {
       console.log(ex);
@@ -204,7 +201,7 @@ function NewUI(props) {
 
   const updateLeverageAmountAndGetQuote = async amount => {
     if (
-      Number.parseInt(amount, 10) === NaN ||
+      Number.isNaN(Number.parseInt(amount, 10)) ||
       !selectedCollateralCurrencyType.value ||
       !selectedLeverageCurrencyType.value
     ) {
@@ -223,7 +220,7 @@ function NewUI(props) {
   };
   const updateCollateralAmountAndGetQuote = async amount => {
     if (
-      Number.parseInt(amount, 10) === NaN ||
+      Number.isNaN(Number.parseInt(amount, 10)) ||
       !selectedCollateralCurrencyType.value ||
       !selectedLeverageCurrencyType.value
     ) {
@@ -285,8 +282,6 @@ function NewUI(props) {
   };
 
   const leverageShort = async () => {
-    let convertedCollateral = (parseFloat(collateralAmount) * leverageMultiplier).toString();
-    const collateralValueInWei = ethers.utils.parseEther(convertedCollateral);
     if (!(await isCollateralApproved(selectedCollateralCurrencyType.value, "1000000"))) {
       await approveCollateral(selectedCollateralCurrencyType.value);
     }
@@ -317,6 +312,7 @@ function NewUI(props) {
 
   return (
     <Layout>
+      {/* <Positions signer={signer} /> */}
       <Header className="header-levaave">
         <div className="header-main-text">LevAave</div>
       </Header>
@@ -336,9 +332,9 @@ function NewUI(props) {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="setting-svg"
                     >
                       <circle cx="12" cy="12" r="3"></circle>
@@ -366,14 +362,14 @@ function NewUI(props) {
                     <div className="swap-page-input-body">
                       <input
                         className="swap-page-input-body-input"
-                        inputmode="decimal"
+                        inputMode="decimal"
                         title="Token Amount"
                         type="text"
                         pattern="^[0-9]*[.,]?[0-9]*$"
                         placeholder="0.0"
-                        minlength="1"
-                        maxlength="79"
-                        spellcheck="false"
+                        minLength="1"
+                        maxLength="79"
+                        spellCheck="false"
                         onChange={e => {
                           updateCollateralAmountAndGetQuote(e.target.value);
                         }}
@@ -456,16 +452,16 @@ function NewUI(props) {
                     <div className="swap-page-input-body">
                       <input
                         className="swap-page-input-body-input"
-                        inputmode="decimal"
+                        inputMode="decimal"
                         title="Token Amount"
-                        autocomplete="off"
-                        autocorrect="off"
+                        autoComplete="off"
+                        autoCorrect="off"
                         type="text"
                         pattern="^[0-9]*[.,]?[0-9]*$"
                         placeholder="0.0"
-                        minlength="1"
-                        maxlength="79"
-                        spellcheck="false"
+                        minLength="1"
+                        maxLength="79"
+                        spellCheck="false"
                         onChange={e => {
                           updateLeverageAmountAndGetQuote(e.target.value);
                         }}
@@ -480,7 +476,7 @@ function NewUI(props) {
                             height="7"
                             viewBox="0 0 12 7"
                             fill="none"
-                            class="swap-page-input-body-button-text-svg"
+                            className="swap-page-input-body-button-text-svg"
                           >
                             <path d="M0.97168 1L6.20532 6L11.439 1" stroke="#AEAEAE"></path>
                           </svg>
