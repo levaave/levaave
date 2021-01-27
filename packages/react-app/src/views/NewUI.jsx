@@ -19,7 +19,7 @@ import {
 import "./NewUI.styles.scss";
 import clsx from "clsx";
 // import { debounce } from "debounce";
-// import UserData from "./UserData";
+import UserData from "./UserData";
 import Positions from "./Positions";
 
 const { Header, Content } = Layout;
@@ -529,7 +529,7 @@ function NewUI(props) {
             </div>
           </div>
 
-          {/* <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} /> */}
+          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} />
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}
