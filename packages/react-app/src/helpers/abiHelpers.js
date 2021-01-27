@@ -10,7 +10,7 @@ export async function getListOfTokensSupportedByAAVE(contract) {
   }
 }
 
-export const tokenData = {
+export const tokenDataJson = {
   USDT: {
     address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     logo: "https://tokens.1inch.exchange/0xdac17f958d2ee523a2206206994597c13d831ec7.png",

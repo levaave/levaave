@@ -4,6 +4,7 @@
   border-bottom: 2px solid rgba(0,0,0,0.1);
   display: flex;
   text-align: left;
+  justify-content: space-between;
 }
 
 .header-main-text-lev {
@@ -28,7 +29,7 @@
 
 .main-background {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
   padding-top: 75px;
   -webkit-box-align: center;
@@ -41,8 +42,10 @@
 .main-div {
   position: relative;
   margin-left: 100px;
+  margin-right: 100px;
   max-width: 420px;
   width: 100%;
+  height: fit-content;
   background: rgb(33, 36, 41);
   box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px, rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px;
   border-radius: 30px;
@@ -73,8 +76,10 @@
   margin: 0px;
   min-width: 0px;
   font-weight: 500;
-  color: rgb(255,255,255);
+  color: white;
   display: block;
+  font-family: monospace;
+  font-size: 20px;
 }
 
 .swap-page-header-setting {
@@ -420,14 +425,12 @@
   color: white;
 }
 
-.connect-button-div {
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  flex-direction: row;
-}
 
 .connect-button {
+  max-width: 160px;
+  margin-top: 12px;
+  border-radius: 20px;
+  margin-right: 60px;
   height: 40px;
     width: 100%;
     text-align: center;
@@ -445,4 +448,63 @@
     color: #20BB56;
     font-size: 16px;
     font-weight: 500;
+    &.logout {
+      background-color: #ED5C5C;
+      width: 100px;
+      color: black;
+    }
+    &.address {
+      margin-right: 15px;
+    }
+}
+
+.table-positions-label {
+  display: block;
+  text-align: left;
+  color: white;
+  font-size: 25px;
+  margin-left: 10px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #1B432D;
+  padding-bottom: 10px;
+  font-style: italic;
+  font-family: monospace;
+}
+
+.table-positions {
+  background-color: #212429;
+  border-radius: 25px;
+  width: 100%;
+  margin-right: 100px;
+  padding: 20px
+}
+
+.main-table {
+  margin-top: 10px;
+  background-color: #212429;
+  width: 100%;
+  border-top: none;
+  color: white;
+}
+
+.close-position-button {
+  background-color: #ED5C5C;
+  border: none;
+  color: black;
+  border-radius: 10px;
+  padding: 3px 10px;
+  font-size: 15px;
+  font-style: italic;
+}
+
+.ghost {
+  margin-top: 125px;
+}
+
+.ghost-text {
+  color: #c3c5cb;
+  font-size: 15px;
+  font-style: italic;
+  font-family: "Helvetica Neue";
+  margin-top: 10px;
 }

@@ -122,7 +122,7 @@ function App(props) {
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
-      <Header />
+      {/* <Header /> */}
 
       <BrowserRouter>
         {/* <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
@@ -164,6 +164,9 @@ function App(props) {
               userProvider={userProvider}
               mainnetProvider={mainnetProvider}
               localProvider={localProvider}
+              loadWeb3Modal={loadWeb3Modal}
+              logoutOfWeb3Modal={logoutOfWeb3Modal}
+              web3Modal={web3Modal}
               // yourLocalBalance={yourLocalBalance}
               // price={price}
               // tx={tx}
@@ -175,7 +178,7 @@ function App(props) {
       </BrowserRouter>
 
       {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
-      <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
+      {/* <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
         <Account
           address={address}
           localProvider={localProvider}
@@ -187,7 +190,7 @@ function App(props) {
           logoutOfWeb3Modal={logoutOfWeb3Modal}
           blockExplorer={blockExplorer}
         />
-      </div>
+      </div> */}
     </div>
   );
 }
