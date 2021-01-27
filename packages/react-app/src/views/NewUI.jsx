@@ -18,7 +18,7 @@ import {
 import "./NewUI.styles.scss";
 import clsx from "clsx";
 // import { debounce } from "debounce";
-// import UserData from "./UserData";
+import UserData from "./UserData";
 import Positions from "./Positions";
 
 const { Header, Content } = Layout;
@@ -506,13 +506,15 @@ function NewUI(props) {
             </div>
           </div>
 
-          {/* <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} /> */}
+          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} />
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}
             target="collateral-token-dd"
             toggle={() => updateIsSelectingCollateralCurrency(!isSelectingCollateralCurrency)}
             hideArrow
+            popperClassName='abc'
+            innerClassName="abcd"
           >
             <PopoverBody>
               <div className="dd-wrapper">
@@ -547,6 +549,8 @@ function NewUI(props) {
             target="leverage-token-dd"
             toggle={() => updateIsSelectingLeverageCurrency(!isSelectingLeverageCurrency)}
             hideArrow
+            popperClassName='kuch'
+
           >
             <PopoverBody>
               <div className="dd-wrapper">
