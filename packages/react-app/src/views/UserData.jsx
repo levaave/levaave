@@ -238,8 +238,10 @@ function UserData(props) {
     <>
       {activeTokenData ? (
         <div className="table-positions">
-          <p style={{ color: "white" }}>Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor)}</p>
-          <div className="table-positions-label">Positions</div>
+          <div style={{display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #1b432d'}}>
+            <div className="table-positions-label">Positions</div>
+            <div style={{ color: "#cbcbcb", fontSize:'15px' }}>Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0,7)}</div>
+          </div>
 
           <Table borderless style={{ color: "#A5A5A5" }} className="main-table">
             <thead>
