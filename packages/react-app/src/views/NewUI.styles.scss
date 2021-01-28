@@ -405,6 +405,7 @@ input[type=number] {
   margin-top: 10px;
   padding: 3px 3px;
   border-radius: 5px;
+  cursor: pointer;
   &.active {
     background-color: #20bb56;
     color: black;
@@ -420,6 +421,7 @@ input[type=number] {
   margin-top: 10px;
   padding: 3px 3px;
   border-radius: 5px;
+  cursor: pointer;
   &.active {
     background-color: #ed5c5c;
     color: #26272c;
@@ -435,6 +437,7 @@ input[type=number] {
   margin-top: 10px;
   padding: 3px 3px;
   border-radius: 8px;
+  cursor: pointer;
   &.active {
     background-color: #20bb56;
     color: black;
@@ -450,6 +453,7 @@ input[type=number] {
   margin-top: 10px;
   padding: 3px 3px;
   border-radius: 8px;
+  cursor: pointer;
   &.active {
     background-color: #ed5c5c;
     color: #26272c;
