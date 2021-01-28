@@ -305,7 +305,10 @@
   min-width: 0px;
   font-weight: 500;
   font-size: 14px;
-  color: #20BB56
+  color: #20BB56;
+  &.short{
+    color: #ED5C5C
+  }
 }
 
 .levaave-button {
@@ -329,6 +332,17 @@
   color: #20BB56;
   font-size: 16px;
   font-weight: 500;
+  
+  &.disabled {
+    background-color: rgb(108, 114, 132);
+    color: rgb(64, 68, 79);
+    cursor: not-allowed;
+  }
+
+  &.short {
+    background-color: #ED5C5C;
+    color: #26272C;
+  }
 }
 
 .position-div {
@@ -398,7 +412,7 @@
   border-radius: 5px;
   &.active{
     background-color:  #ED5C5C;
-    color: white
+    color: #26272C;
   }
 }
 
@@ -414,6 +428,21 @@
   &.active{
     background-color:  #20BB56;
     color: white;
+  }
+}
+
+.leverage-box-short {
+  display: table;
+  font-size: 12px;
+  border: 2px solid #ED5C5C;
+  color: #ED5C5C;
+  margin-right: 10px;
+  margin-top: 10px;
+  padding: 3px 3px;
+  border-radius: 8px;
+  &.active{
+    background-color:  #ED5C5C;
+    color: #26272C;;
   }
 }
 
@@ -514,7 +543,7 @@
 .close-position-button {
   background-color: #ED5C5C;
   border: none;
-  color: black;
+  color: #26272C;;
   border-radius: 10px;
   padding: 3px 10px;
   font-size: 15px;

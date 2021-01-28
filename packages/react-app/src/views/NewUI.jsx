@@ -452,24 +452,42 @@ function NewUI(props) {
                   <div className="leverage-div">
                     <div className="leverage-label-div">Leverage:</div>
                     <div style={{ display: 'flex'}}>
-                      <div
+                      {leverageType==='long' && <div
                         className={clsx({ "leverage-box": true, active: leverageMultiplier === 1 })}
                         onClick={() => updateLeverageMultiplier(1)}
                       >
                         2x
-                      </div>
-                      <div
+                      </div>}
+                      {leverageType==='long' && <div
                         className={clsx({ "leverage-box": true, active: leverageMultiplier === 2 })}
                         onClick={() => updateLeverageMultiplier(2)}
                       >
                         3x
-                      </div>
-                      <div
+                      </div>}
+                      {leverageType==='long' && <div
                         className={clsx({ "leverage-box": true, active: leverageMultiplier === 3 })}
                         onClick={() => updateLeverageMultiplier(3)}
                       >
                         4x
-                      </div>
+                      </div>}
+                      {leverageType==='short' && <div
+                        className={clsx({ "leverage-box-short": true, active: leverageMultiplier === 1, })}
+                        onClick={() => updateLeverageMultiplier(1)}
+                      >
+                        2x
+                      </div>}
+                      {leverageType==='short' &&<div
+                        className={clsx({ "leverage-box-short": true, active: leverageMultiplier === 2 })}
+                        onClick={() => updateLeverageMultiplier(2)}
+                      >
+                        3x
+                      </div>}
+                      {leverageType==='short' &&<div
+                        className={clsx({ "leverage-box-short": true, active: leverageMultiplier === 3 })}
+                        onClick={() => updateLeverageMultiplier(3)}
+                      >
+                        4x
+                      </div>}
                     </div>
                   </div>
                 </div>
@@ -505,7 +523,7 @@ function NewUI(props) {
                         onChange={e => {
                           updateLeverageAmountAndGetQuote(e.target.value);
                         }}
-                        value={(leverageMultiplier+1)*leverageAmount}
+                        value={leverageAmount > 0 ? (leverageMultiplier+1)*leverageAmount:leverageAmount}
                       ></input>
                       <button id="leverage-token-dd" className="swap-page-input-body-button">
                         <span className="swap-page-input-body-button-main-span">
@@ -531,7 +549,7 @@ function NewUI(props) {
                   <div className="slippage-tolerance-grid-div">
                     <div className="slippage-tolerance-div">
                       <div className="slippage-tolerance-label">Slippage Tolerance</div>
-                      <div className="slippage-tolerance-percentage">1 %</div>
+                      <div className={clsx({ "slippage-tolerance-percentage": true, short: leverageType === "short" })}>1 %</div>
                     </div>
                   </div>
                 </div>
@@ -539,9 +557,14 @@ function NewUI(props) {
 
               {/* Final Leverage Call Button  */}
               <div style={{ marginTop: "1rem" }}>
-                <button className="levaave-button" onClick={execute}>
-                  Flash {leverageType==='short'?'Short':'Long'}
-                </button>
+                {leverageAmount && leverageAmount>0?
+                  <button className={clsx({ "levaave-button": true, short: leverageType === "short" })}>
+                    Flash {leverageType==='short'?'Short':'Long'}
+                  </button>: 
+                  <button className="levaave-button disabled">
+                    Enter Value
+                  </button>
+                }
               </div>
             </div>
           </div>
