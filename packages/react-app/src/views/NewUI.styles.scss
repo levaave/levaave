@@ -387,6 +387,21 @@
   }
 }
 
+.position-short-box {
+  display: table;
+  font-size: 12px;
+  border: 2px solid #ED5C5C;
+  color: #ED5C5C;
+  margin-left: 10px;
+  margin-top: 10px;
+  padding: 3px 3px;
+  border-radius: 5px;
+  &.active{
+    background-color:  #ED5C5C;
+    color: white
+  }
+}
+
 .leverage-box {
   display: table;
   font-size: 12px;

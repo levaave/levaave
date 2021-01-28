@@ -442,7 +442,7 @@ function NewUI(props) {
                       </div>
                       <div
                         onClick={() => onChangeLeverageType("short")}
-                        className={clsx({ "position-box": true, active: leverageType === "short" })}
+                        className={clsx({ "position-short-box": true, active: leverageType === "short" })}
                       >
                         Short
                       </div>
@@ -475,7 +475,7 @@ function NewUI(props) {
                 </div>
 
                 <div className="swap-price-div">
-                  Swap Price: {leverageAmount} {selectedLeverageCurrencyType.label}
+                  Swap Price: {leverageAmount||0.0} {selectedLeverageCurrencyType.label}
                 </div>
 
                 {/* Leverage box  */}
