@@ -474,6 +474,10 @@ function NewUI(props) {
                   </div>
                 </div>
 
+                <div className="swap-price-div">
+                  Swap Price: {leverageAmount} {selectedLeverageCurrencyType.label}
+                </div>
+
                 {/* Leverage box  */}
                 <div className="swap-page-collateral-loan-div">
                   <div className="swap-page-input-div">
@@ -501,7 +505,7 @@ function NewUI(props) {
                         onChange={e => {
                           updateLeverageAmountAndGetQuote(e.target.value);
                         }}
-                        value={leverageAmount}
+                        value={(leverageMultiplier+1)*leverageAmount}
                       ></input>
                       <button id="leverage-token-dd" className="swap-page-input-body-button">
                         <span className="swap-page-input-body-button-main-span">

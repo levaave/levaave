@@ -41,8 +41,8 @@
 
 .main-div {
   position: relative;
-  margin-left: 100px;
-  margin-right: 100px;
+  margin-left: 50px;
+  margin-right: 75px;
   max-width: 420px;
   width: 100%;
   height: fit-content;
@@ -368,6 +368,8 @@
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
+  border-bottom: 1px solid #1B432D;
+  padding-bottom: 25px;
 }
 
 .position-box {
@@ -475,10 +477,17 @@
   background-color: #212429;
   border-radius: 25px;
   width: 100%;
-  margin-right: 100px;
+  margin-right: 50px;
   padding: 20px
 }
 
+.swap-price-div {
+  color: #c3c5cb;
+  font-size: 12px;
+  font-style: italic;
+  text-align: left;
+  margin-left: 10px;
+}
 .main-table {
   margin-top: 10px;
   background-color: #212429;
