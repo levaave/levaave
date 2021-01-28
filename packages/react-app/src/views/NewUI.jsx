@@ -405,7 +405,7 @@ function NewUI(props) {
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          debounce(updateCollateralAmountAndGetQuote(e.target.value),1000);
+                          updateCollateralAmountAndGetQuote(e.target.value);
                         }}
                         value={collateralAmount}
                       />
@@ -516,6 +516,7 @@ function NewUI(props) {
                         title="Token Amount"
                         autoComplete="off"
                         autoCorrect="off"
+                        disabled="true"
                         type="text"
                         pattern="^[0-9]*[.,]?[0-9]*$"
                         placeholder="0.0"
@@ -523,7 +524,7 @@ function NewUI(props) {
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          debounce(updateLeverageAmountAndGetQuote(e.target.value),1000);
+                          updateLeverageAmountAndGetQuote(e.target.value);
                         }}
                         value={leverageAmount > 0 ? (leverageMultiplier+1)*leverageAmount:leverageAmount}
                       ></input>
