@@ -38,10 +38,10 @@ const main = async () => {
   });
   await hre.network.provider.request({
     method: "hardhat_impersonateAccount",
-    params: ["0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce"],
+    params: ["0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE"],
   });
   const signerDai = await ethers.provider.getSigner(
-    "0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce"
+    "0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE"
   );
   const dai = new ethers.Contract(
     "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -49,7 +49,7 @@ const main = async () => {
     signerDai
   );
   await dai.transferFrom(
-    "0xF3Ae3bBdeB2fB7F9C32FbB1F4fbDAF1150a1c5Ce",
+    "0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE",
     deployerAddress,
     ethers.utils.parseUnits("10000")
   );
@@ -59,10 +59,10 @@ const main = async () => {
   });
   await hre.network.provider.request({
     method: "hardhat_impersonateAccount",
-    params: ["0xf4dB4093dD8419B79FD4Ea39128da44699CFf3B4"],
+    params: ["0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"],
   });
   const signerUni = await ethers.provider.getSigner(
-    "0xf4dB4093dD8419B79FD4Ea39128da44699CFf3B4"
+    "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"
   );
   const uni = new ethers.Contract(
     "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
@@ -70,7 +70,7 @@ const main = async () => {
     signerUni
   );
   await uni.transferFrom(
-    "0xf4dB4093dD8419B79FD4Ea39128da44699CFf3B4",
+    "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
     deployerAddress,
     ethers.utils.parseUnits("5000")
   );
