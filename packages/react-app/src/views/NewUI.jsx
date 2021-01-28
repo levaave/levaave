@@ -76,6 +76,7 @@ function NewUI(props) {
   });
 
   const [tokenOptionsForLeveraging, updateTokenOptionsForLeveraging] = useState([]);
+  const [tokenOptionsForCollateral, updateTokenOptionsForCollateral] = useState([]);
 
   const aTokensAddress = {
     AAVE: "0xFFC97d72E13E01096502Cb8Eb52dEe56f74DAD7B",
@@ -102,19 +103,15 @@ function NewUI(props) {
     ZRX: "0xDf7FF54aAcAcbFf42dfe29DD6144A69b629f8C9e",
   };
 
+  const dropdownListLevergae = [{"label":"USDT","value":"0xdAC17F958D2ee523a2206206994597C13D831ec7"},{"label":"WBTC","value":"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"},{"label":"WETH","value":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"},{"label":"YFI","value":"0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"},{"label":"ZRX","value":"0xE41d2489571d322189246DaFA5ebDe1F4699F498"},{"label":"UNI","value":"0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"},{"label":"BAT","value":"0x0D8775F648430679A709E98d2b0Cb6250d2887EF"},{"label":"BUSD","value":"0x4Fabb145d64652a948d72533023f6E7A623C7C53"},{"label":"DAI","value":"0x6B175474E89094C44Da98b954EedeAC495271d0F"},{"label":"ENJ","value":"0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c"},{"label":"KNC","value":"0xdd974D5C2e2928deA5F71b9825b8b646686BD200"},{"label":"LINK","value":"0x514910771AF9Ca656af840dff83E8264EcF986CA"},{"label":"MANA","value":"0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"},{"label":"MKR","value":"0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"},{"label":"REN","value":"0x408e41876cCCDC0F92210600ef50372656052a38"},{"label":"SNX","value":"0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"},{"label":"sUSD","value":"0x57Ab1ec28D129707052df4dF418D58a2D46d5f51"},{"label":"TUSD","value":"0x0000000000085d4780B73119b644AE5ecd22b376"},{"label":"USDC","value":"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"},{"label":"CRV","value":"0xD533a949740bb3306d119CC777fa900bA034cd52"},{"label":"GUSD","value":"0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd"}]
+  const dropdownListCollateral = [{"label":"Select currency type","value":""},{"label":"WBTC","value":"0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"},{"label":"WETH","value":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"},{"label":"YFI","value":"0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"},{"label":"ZRX","value":"0xE41d2489571d322189246DaFA5ebDe1F4699F498"},{"label":"UNI","value":"0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"},{"label":"AAVE","value":"0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"},{"label":"BAT","value":"0x0D8775F648430679A709E98d2b0Cb6250d2887EF"},{"label":"DAI","value":"0x6B175474E89094C44Da98b954EedeAC495271d0F"},{"label":"ENJ","value":"0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c"},{"label":"KNC","value":"0xdd974D5C2e2928deA5F71b9825b8b646686BD200"},{"label":"LINK","value":"0x514910771AF9Ca656af840dff83E8264EcF986CA"},{"label":"MANA","value":"0x0F5D2fB29fb7d3CFeE444a200298f468908cC942"},{"label":"MKR","value":"0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"},{"label":"REN","value":"0x408e41876cCCDC0F92210600ef50372656052a38"},{"label":"SNX","value":"0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"},{"label":"TUSD","value":"0x0000000000085d4780B73119b644AE5ecd22b376"},{"label":"USDC","value":"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"},{"label":"CRV","value":"0xD533a949740bb3306d119CC777fa900bA034cd52"}];
   //* --- state variables ---
 
   useEffect(() => {
     const isFetchingInfo = async () => {
       updateIsLoading(true);
-
-      const listOfAAVESupporterTokens = await getListOfTokensSupportedByAAVE(dataProviderContract);
-      const selectDropdownList = [{ label: "Select currency type", value: "" }];
-      listOfAAVESupporterTokens.forEach(token => {
-        const option = { label: token.symbol, value: token.tokenAddress };
-        selectDropdownList.push(option);
-      });
-      updateTokenOptionsForLeveraging(selectDropdownList);
+      updateTokenOptionsForLeveraging(dropdownListLevergae);
+      updateTokenOptionsForCollateral(dropdownListCollateral);
 
       updateIsLoading(false);
     };
@@ -203,47 +200,69 @@ function NewUI(props) {
     updateLeverageType(value);
   };
 
-  const updateLeverageAmountAndGetQuote = async amount => {
-    if (
-      Number.isNaN(Number.parseInt(amount, 10)) ||
-      !selectedCollateralCurrencyType.value ||
-      !selectedLeverageCurrencyType.value
-    ) {
+  const updateCollateralCurrency = (option) => {
+    if (selectedLeverageCurrencyType.label === option.label) {
       return;
     }
+    updateSelectedCollateralCurrencyType(option);
+  }
+
+  const updateLeverageCurrency = (option) => {
+    if (selectedCollateralCurrencyType.label === option.label) {
+      return;
+    }
+    updateSelectedLeverageCurrencyType(option);
+  }
+
+  const updateLeverageAmountAndGetQuote = async amount => {
+    // if (
+    //   Number.isNaN(Number.parseInt(amount, 10)) ||
+    //   !selectedCollateralCurrencyType.value ||
+    //   !selectedLeverageCurrencyType.value
+    // ) {
+    //   return;
+    // }
     updateLeverageAmount(amount);
     updateIsLoading(true);
     updateCollateralAmount("");
-    let leverageAmountInWei = ethers.utils.parseEther(amount);
-    const quotedCollateralAmountInWei = await getSwapQuote(
-      selectedLeverageCurrencyType.value,
-      selectedCollateralCurrencyType.value,
-      leverageAmountInWei,
-    );
-    updateIsLoading(false);
-    updateCollateralAmount(quotedCollateralAmountInWei);
+    if (amount.length > 0) {
+      let leverageAmountInWei = ethers.utils.parseEther(amount);
+      const quotedCollateralAmountInWei = await getSwapQuote(
+        selectedLeverageCurrencyType.value,
+        selectedCollateralCurrencyType.value,
+        leverageAmountInWei,
+      );
+      updateIsLoading(false);
+      updateCollateralAmount(quotedCollateralAmountInWei);
+    } else {
+      updateCollateralAmount("")
+    }
   };
   const updateCollateralAmountAndGetQuote = async amount => {
-    if (
-      Number.isNaN(Number.parseInt(amount, 10)) ||
-      !selectedCollateralCurrencyType.value ||
-      !selectedLeverageCurrencyType.value
-    ) {
-      return;
-    }
+    // if (
+    //   Number.isNaN(Number.parseInt(amount, 10)) ||
+    //   !selectedCollateralCurrencyType.value ||
+    //   !selectedLeverageCurrencyType.value
+    // ) {
+    //   return;
+    // }
     updateCollateralAmount(amount);
-    let collateralAmountInWei = ethers.utils.parseEther(amount);
-    updateLeverageAmount("");
-    updateIsLoading(true);
+    if (amount.length>0) {
+      let collateralAmountInWei = ethers.utils.parseEther(amount);
+      updateLeverageAmount("");
+      updateIsLoading(true);
 
-    const quotedLeverageAmountInWei = await getSwapQuote(
-      selectedCollateralCurrencyType.value,
-      selectedLeverageCurrencyType.value,
-      collateralAmountInWei,
-    );
+      const quotedLeverageAmountInWei = await getSwapQuote(
+        selectedCollateralCurrencyType.value,
+        selectedLeverageCurrencyType.value,
+        collateralAmountInWei,
+      );
 
-    updateIsLoading(false);
-    updateLeverageAmount(quotedLeverageAmountInWei);
+      updateIsLoading(false);
+      updateLeverageAmount(quotedLeverageAmountInWei);
+    } else {
+      updateLeverageAmount("");
+    }
   };
 
   const execute = () => {
@@ -621,13 +640,13 @@ function NewUI(props) {
           >
             <PopoverBody className="popover-body">
               <div className="dd-wrapper">
-                {tokenOptionsForLeveraging.map(option => {
+                {tokenOptionsForCollateral.map(option => {
                   return (
                     <div
                       key={option.value}
                       className="dd-option"
                       onClick={() => {
-                        updateSelectedCollateralCurrencyType(option);
+                        updateCollateralCurrency(option);
                         updateIsSelectingCollateralCurrency(false);
                       }}
                     >
@@ -662,7 +681,7 @@ function NewUI(props) {
                       key={option.value}
                       className="dd-option"
                       onClick={() => {
-                        updateSelectedLeverageCurrencyType(option);
+                        updateLeverageCurrency(option);
                         updateIsSelectingLeverageCurrency(false);
                       }}
                     >
