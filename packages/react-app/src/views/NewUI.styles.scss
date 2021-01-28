@@ -16,13 +16,21 @@
   font-family: Helvetica, sans-serif;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .header-main-text-aave {
   height: 100%;
   color: #20bb56;
-  font-size: 25px;
+  font-size: 30px;
   text-align: left;
-  margin-top: 2px;
-  font-weight: 800;
   font-family: Helvetica, sans-serif;
 }
 

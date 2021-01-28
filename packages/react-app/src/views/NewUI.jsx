@@ -267,7 +267,7 @@ function NewUI(props) {
     updateLeverageAmount(amount);
     updateIsLoading(true);
     updateCollateralAmount("");
-    if (amount.length > 0) {
+    if (amount.length>0) {
       let leverageAmountInWei = ethers.utils.parseEther(amount);
       const quotedCollateralAmountInWei = await getSwapQuote(
         selectedLeverageCurrencyType.value,
@@ -468,14 +468,14 @@ function NewUI(props) {
                         className="swap-page-input-body-input"
                         inputMode="decimal"
                         title="Token Amount"
-                        type="text"
+                        type="number"
                         pattern="^[0-9]*[.,]?[0-9]*$"
                         placeholder="0.0"
                         minLength="1"
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          debounce(updateCollateralAmountAndGetQuote(e.target.value), 1000);
+                          debounce(updateCollateralAmountAndGetQuote(e.target.value.toString()), 1000);
                         }}
                         value={collateralAmount}
                       />
