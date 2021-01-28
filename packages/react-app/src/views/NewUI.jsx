@@ -18,7 +18,7 @@ import {
 } from "../helpers/abiHelpers";
 import "./NewUI.styles.scss";
 import clsx from "clsx";
-// import { debounce } from "debounce";
+import { debounce } from "debounce";
 import UserData from "./UserData";
 import Positions from "./Positions";
 
@@ -213,6 +213,7 @@ function NewUI(props) {
     }
     updateLeverageAmount(amount);
     updateIsLoading(true);
+    updateCollateralAmount("");
     let leverageAmountInWei = ethers.utils.parseEther(amount);
     const quotedCollateralAmountInWei = await getSwapQuote(
       selectedLeverageCurrencyType.value,
@@ -232,6 +233,7 @@ function NewUI(props) {
     }
     updateCollateralAmount(amount);
     let collateralAmountInWei = ethers.utils.parseEther(amount);
+    updateLeverageAmount("");
     updateIsLoading(true);
 
     const quotedLeverageAmountInWei = await getSwapQuote(
@@ -403,7 +405,7 @@ function NewUI(props) {
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          updateCollateralAmountAndGetQuote(e.target.value);
+                          debounce(updateCollateralAmountAndGetQuote(e.target.value),1000);
                         }}
                         value={collateralAmount}
                       />
@@ -521,7 +523,7 @@ function NewUI(props) {
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          updateLeverageAmountAndGetQuote(e.target.value);
+                          debounce(updateLeverageAmountAndGetQuote(e.target.value),1000);
                         }}
                         value={leverageAmount > 0 ? (leverageMultiplier+1)*leverageAmount:leverageAmount}
                       ></input>
@@ -558,7 +560,7 @@ function NewUI(props) {
               {/* Final Leverage Call Button  */}
               <div style={{ marginTop: "1rem" }}>
                 {leverageAmount && leverageAmount>0?
-                  <button className={clsx({ "levaave-button": true, short: leverageType === "short" })}>
+                  <button className={clsx({ "levaave-button": true, short: leverageType === "short" }) } onClick={execute}>
                     Flash {leverageType==='short'?'Short':'Long'}
                   </button>: 
                   <button className="levaave-button disabled">
