@@ -76,9 +76,6 @@ function NewUI(props) {
     value: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
   });
 
-  const [tokenOptionsForLeveraging, updateTokenOptionsForLeveraging] = useState([]);
-  const [tokenOptionsForCollateral, updateTokenOptionsForCollateral] = useState([]);
-
   const aTokensAddress = {
     AAVE: "0xFFC97d72E13E01096502Cb8Eb52dEe56f74DAD7B",
     BAT: "0x05Ec93c0365baAeAbF7AefFb0972ea7ECdD39CF1",
@@ -148,18 +145,21 @@ function NewUI(props) {
     { label: "USDC", value: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" },
     { label: "CRV", value: "0xD533a949740bb3306d119CC777fa900bA034cd52" },
   ];
+
+  const [tokenOptionsForLeveraging, updateTokenOptionsForLeveraging] = useState(dropdownListLevergae);
+  const [tokenOptionsForCollateral, updateTokenOptionsForCollateral] = useState(dropdownListCollateral);
   //* --- state variables ---
 
-  useEffect(() => {
-    const isFetchingInfo = async () => {
-      updateIsLoading(true);
-      updateTokenOptionsForLeveraging(dropdownListLevergae);
-      updateTokenOptionsForCollateral(dropdownListCollateral);
+  // useEffect(() => {
+  //   const isFetchingInfo = async () => {
+  //     updateIsLoading(true);
+  //     updateTokenOptionsForLeveraging(dropdownListLevergae);
+  //     updateTokenOptionsForCollateral(dropdownListCollateral);
 
-      updateIsLoading(false);
-    };
-    isFetchingInfo();
-  }, []);
+  //     updateIsLoading(false);
+  //   };
+  //   isFetchingInfo();
+  // }, []);
 
   const userAddress = useUserAddress(userProvider);
 
@@ -268,7 +268,7 @@ function NewUI(props) {
     updateLeverageAmount(amount);
     updateIsLoading(true);
     updateCollateralAmount("");
-    if (amount.length>0) {
+    if (amount.length > 0) {
       let leverageAmountInWei = ethers.utils.parseEther(amount);
       const quotedCollateralAmountInWei = await getSwapQuote(
         selectedLeverageCurrencyType.value,
@@ -291,8 +291,10 @@ function NewUI(props) {
     // }
     updateCollateralAmount(amount);
     if (amount.length > 0) {
-
-      let collateralAmountInWei = ethers.utils.parseUnits(amount, tokenDataJson[selectedCollateralCurrencyType.label].decimal);
+      let collateralAmountInWei = ethers.utils.parseUnits(
+        amount,
+        tokenDataJson[selectedCollateralCurrencyType.label].decimal,
+      );
       updateLeverageAmount("");
       updateIsLoading(true);
 
@@ -413,16 +415,12 @@ function NewUI(props) {
           )}
           {web3Modal && web3Modal.cachedProvider ? (
             <button className="connect-button logout" onClick={logoutOfWeb3Modal}>
-              <WalletOutlined 
-                style={{marginRight: '5px'}}
-              />
+              <WalletOutlined style={{ marginRight: "5px" }} />
               Logout
             </button>
           ) : (
             <button className="connect-button" onClick={loadWeb3Modal}>
-              <WalletOutlined 
-                style={{marginRight: '5px'}}
-              />
+              <WalletOutlined style={{ marginRight: "5px" }} />
               Connect Wallet
             </button>
           )}
@@ -677,7 +675,7 @@ function NewUI(props) {
             </div>
           </div>
 
-          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} />
+          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} tokenDataJson={tokenDataJson}/>
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}
@@ -687,6 +685,7 @@ function NewUI(props) {
             popperClassName="custom-popover"
             innerClassName="custom-inner-popover"
             fade={true}
+            trigger="focus"
           >
             <PopoverBody className="popover-body">
               <div className="dd-wrapper">
@@ -722,6 +721,7 @@ function NewUI(props) {
             toggle={() => updateIsSelectingLeverageCurrency(!isSelectingLeverageCurrency)}
             hideArrow
             className="popover-main-body"
+            trigger="focus"
           >
             <PopoverBody style={{ padding: "0px" }}>
               <div className="dd-wrapper">

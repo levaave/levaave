@@ -23,7 +23,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -477,7 +477,7 @@ input[type=number] {
 
 .popover-body {
   background: #212429;
-  border-radius: 25px;
+  // border-radius: 25px;
   color: white;
 }
 
@@ -575,4 +575,44 @@ input[type=number] {
   font-style: italic;
   font-family: "Helvetica Neue";
   margin-top: 10px;
+}
+
+/// user Positions
+.close-position-popover {
+  background: #797575;
+  width: 650px;
+  height: 190px;
+  border-radius: 10px;
+  .popover-header {
+    height: 35px;
+    display: block;
+    width: 100%;
+    background: #797575;
+  }
+  .popover-body {
+    height: 120px;
+    background: #797575;
+    .asset-1 {
+      height: 50%;
+      div {
+        display: inline-block;
+        min-width: 20%;
+        margin-right: 10px;
+        height: 100%;
+      }
+    }
+    .asset-2 {
+      height: 50%;
+      div {
+        display: inline-block;
+        min-width: 20%;
+        margin-right: 10px;
+        height: 100%;
+      }
+    }
+    .close-btn {
+      display: block;
+      height: 40px;
+    }
+  }
 }
