@@ -540,6 +540,7 @@ function NewUI(props) {
                         title="Token Amount"
                         autoComplete="off"
                         autoCorrect="off"
+                        disabled="true"
                         type="text"
                         pattern="^[0-9]*[.,]?[0-9]*$"
                         placeholder="0.0"
