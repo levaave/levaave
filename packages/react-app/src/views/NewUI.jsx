@@ -291,7 +291,8 @@ function NewUI(props) {
     // }
     updateCollateralAmount(amount);
     if (amount.length > 0) {
-      let collateralAmountInWei = ethers.utils.parseEther(amount);
+
+      let collateralAmountInWei = ethers.utils.parseUnits(amount, tokenDataJson[selectedCollateralCurrencyType.label].decimal);
       updateLeverageAmount("");
       updateIsLoading(true);
 
