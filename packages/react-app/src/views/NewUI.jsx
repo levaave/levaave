@@ -18,7 +18,7 @@ import {
 } from "../helpers/abiHelpers";
 import "./NewUI.styles.scss";
 import clsx from "clsx";
-// import { debounce } from "debounce";
+import { debounce } from "debounce";
 import UserData from "./UserData";
 import Positions from "./Positions";
 
@@ -213,6 +213,7 @@ function NewUI(props) {
     }
     updateLeverageAmount(amount);
     updateIsLoading(true);
+    updateCollateralAmount("");
     let leverageAmountInWei = ethers.utils.parseEther(amount);
     const quotedCollateralAmountInWei = await getSwapQuote(
       selectedLeverageCurrencyType.value,
@@ -232,6 +233,7 @@ function NewUI(props) {
     }
     updateCollateralAmount(amount);
     let collateralAmountInWei = ethers.utils.parseEther(amount);
+    updateLeverageAmount("");
     updateIsLoading(true);
 
     const quotedLeverageAmountInWei = await getSwapQuote(
@@ -412,7 +414,7 @@ function NewUI(props) {
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          updateCollateralAmountAndGetQuote(e.target.value);
+                          debounce(updateCollateralAmountAndGetQuote(e.target.value), 1000);
                         }}
                         value={collateralAmount}
                       />
@@ -545,9 +547,13 @@ function NewUI(props) {
                         maxLength="79"
                         spellCheck="false"
                         onChange={e => {
-                          updateLeverageAmountAndGetQuote(e.target.value);
+                          debounce(updateLeverageAmountAndGetQuote(e.target.value), 1000);
                         }}
-                        value={leverageAmount > 0 ? (leverageMultiplier + 1) * leverageAmount : leverageAmount}
+                        value={
+                          leverageAmount > 0
+                            ? (leverageType === "long" ? leverageMultiplier + 1 : leverageMultiplier) * leverageAmount
+                            : leverageAmount
+                        }
                         readOnly
                       ></input>
                       <button id="leverage-token-dd" className="swap-page-input-body-button">
