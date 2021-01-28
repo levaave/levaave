@@ -231,7 +231,7 @@ function UserData(props) {
   // usePoller(getReserveTokens, 3000);
   // usePoller(getReserveData, 15000);
   // usePoller(getUserAssetData, 6000);
-  // usePoller(getUserInfo, 6000);
+  usePoller(getUserInfo, 10000);
   // if (activeTokenData && Object.keys(activeTokenData.length) > 0) {
   //  debugger;
   return (
