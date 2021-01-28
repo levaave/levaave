@@ -27,7 +27,7 @@ export const tokenDataJson = {
     address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     logo: "https://tokens.1inch.exchange/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
     name: "Wrapped Ether",
-    decimal: 8
+    decimal: 18
   },
   YFI: {
     address: "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
