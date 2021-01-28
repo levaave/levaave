@@ -1,5 +1,6 @@
 import React, { useState, memo, useEffect } from "react";
 import { Popover, PopoverBody } from "reactstrap";
+import { WalletOutlined } from "@ant-design/icons";
 // import Select from "react-select";
 import flashloancontract from "../contracts/LevAave.address.js";
 import { useUserAddress } from "eth-hooks";
@@ -411,10 +412,16 @@ function NewUI(props) {
           )}
           {web3Modal && web3Modal.cachedProvider ? (
             <button className="connect-button logout" onClick={logoutOfWeb3Modal}>
+              <WalletOutlined 
+                style={{marginRight: '5px'}}
+              />
               Logout
             </button>
           ) : (
             <button className="connect-button" onClick={loadWeb3Modal}>
+              <WalletOutlined 
+                style={{marginRight: '5px'}}
+              />
               Connect Wallet
             </button>
           )}
