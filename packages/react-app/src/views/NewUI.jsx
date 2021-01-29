@@ -3,7 +3,7 @@ import { Popover, PopoverBody } from "reactstrap";
 import { WalletOutlined } from "@ant-design/icons";
 // import Select from "react-select";
 import flashloancontract from "../contracts/LevAave.address.js";
-import { useUserAddress } from "eth-hooks";
+import { useUserAddress, usePoller } from "eth-hooks";
 import { Layout } from "antd";
 import { ethers } from "ethers";
 import abi from "../contracts/LevAave.abi";
@@ -156,7 +156,6 @@ function NewUI(props) {
       updateIsLoading(true);
       updateTokenOptionsForLeveraging(dropdownListLevergae);
       updateTokenOptionsForCollateral(dropdownListCollateral);
-
       updateIsLoading(false);
     };
     isFetchingInfo();
@@ -430,6 +429,7 @@ function NewUI(props) {
   const getPositions = async () => {
     let positions = [];
     const positionsLength = await contract.positionsLength(signer.getAddress());
+    console.log(positionsLength);
     const positionsConv = parseInt(positionsLength.toString());
     for (let i = 0; i < positionsConv; i++) {
       let position = await contract.positions(signer.getAddress(), i);
@@ -457,8 +457,10 @@ function NewUI(props) {
       });
     }
     console.log(positions);
-    // updatePositions(positions);
+    updatePositions(positions);
   };
+
+  usePoller(getPositions,3000);
 
   return (
     <Layout>
@@ -751,7 +753,7 @@ function NewUI(props) {
             </div>
           </div>
 
-          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} contract={contract} />
+          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} contract={contract} positions={positions} />
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}

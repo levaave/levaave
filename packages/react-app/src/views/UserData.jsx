@@ -27,7 +27,7 @@ function UserData(props) {
   const POOL_ADDRESSES_PROVIDER_ADDRESS = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
   const PROTOCOL_DATA_PROVIDER = "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d";
   const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
-  const { signer, liveAsset, contract } = props;
+  const { signer, liveAsset, contract, positions } = props;
 
   let addressProviderContract = new ethers.Contract(POOL_ADDRESSES_PROVIDER_ADDRESS, IAddressProvider, signer);
   let dataProviderContract = new ethers.Contract(PROTOCOL_DATA_PROVIDER, IDataProvider, signer);
@@ -227,52 +227,55 @@ function UserData(props) {
   // usePoller(getReserveTokens, 3000);
   // usePoller(getReserveData, 15000);
   // usePoller(getUserAssetData, 6000);
-  usePoller(getUserInfo, 10000);
+  //usePoller(getUserInfo, 10000);
   // if (activeTokenData && Object.keys(activeTokenData.length) > 0) {
   //  debugger;
   return (
     <>
-      {activeTokenData ? (
+      {(positions && positions.length > 0) ? (
         <div className="table-positions">
           <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #1b432d" }}>
             <div className="table-positions-label">Positions</div>
-            <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
+            {userAccountData && <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
               Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0, 4)}
-            </div>
+            </div>}
           </div>
 
           <Table borderless style={{ color: "#A5A5A5" }} className="main-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Symbol</th>
-                <th>Variable Debt</th>
-                <th>Stable Debt</th>
+                <th>Pair</th>
+                <th>Collateral Amount</th>
+                <th>Position</th>
                 <th>ATokens</th>
               </tr>
             </thead>
             <tbody>
-              {activeTokenData.map(tokenData => {
+              {positions.map(positionData => {
                 return (
-                  <tr key={tokenData.symbol}>
+                  <tr>
                     <th scope="row">
-                      <img className="swap-page-input-body-button-img" src={tokenDataJson[tokenData.symbol].logo}></img>
+                      {positionData.collateralSymbol}
+                      {' '}
+                      {/* <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.collateralSymbol].logo}></img> */}
+                      {' - '}
+                      {positionData.leveragedAssetSymbol}
+                      {' '}
+                      {/* <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.leveragedAssetSymbol].logo}></img> */}
                     </th>
-                    <td>{tokenData.symbol}</td>
                     <td>
-                      {tokenData.variable
-                        ? parseFloat(ethers.utils.formatEther(tokenData.variable.toString())).toFixed(2).toString()
-                        : 0}
+                    <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.collateralSymbol].logo}></img>
+                      {'  '}
+                      {positionData.collateralAmount}{' '}{positionData.collateralSymbol}
                     </td>
+                    {positionData.direction === '0.0' ? 
+                    (<td style={{color: "#20bb56",fontStyle: 'italic'}}>LONG</td>):
+                    (<td style={{color:"#ed5c5c", fontStyle: 'italic'}}>SHORT</td>)
+                    }
                     <td>
-                      {tokenData.stable
-                        ? parseFloat(ethers.utils.formatEther(tokenData.stable.toString())).toFixed(2).toString()
-                        : 0}
-                    </td>
-                    <td>
-                      {tokenData.aToken
-                        ? parseFloat(ethers.utils.formatEther(tokenData.aToken.toString())).toFixed(2).toString()
-                        : 0}
+                      <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.leveragedAssetSymbol].logo}></img>
+                      {'  '}
+                      {positionData.leveragedAmount.slice(0,8)}{' '}{positionData.leveragedAssetSymbol}
                     </td>
                     <td>
                       <button className="close-position-button">Close</button>
