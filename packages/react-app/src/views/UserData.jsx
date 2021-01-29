@@ -27,7 +27,7 @@ function UserData(props) {
   const POOL_ADDRESSES_PROVIDER_ADDRESS = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
   const PROTOCOL_DATA_PROVIDER = "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d";
   const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
-  const { signer, liveAsset } = props;
+  const { signer, liveAsset, contract } = props;
 
   let addressProviderContract = new ethers.Contract(POOL_ADDRESSES_PROVIDER_ADDRESS, IAddressProvider, signer);
   let dataProviderContract = new ethers.Contract(PROTOCOL_DATA_PROVIDER, IDataProvider, signer);
@@ -223,10 +223,6 @@ function UserData(props) {
     }
   };
 
-  const closeLong = async () => {
-    console.log("useraccountdata", userAccountData);
-  };
-
   // usePoller(getTokenBalance, 3000);
   // usePoller(getReserveTokens, 3000);
   // usePoller(getReserveData, 15000);
@@ -279,9 +275,7 @@ function UserData(props) {
                         : 0}
                     </td>
                     <td>
-                      <button className="close-position-button" onClick={closeLong}>
-                        Close
-                      </button>
+                      <button className="close-position-button">Close</button>
                     </td>
                   </tr>
                 );

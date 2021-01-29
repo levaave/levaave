@@ -14,6 +14,7 @@ import {
   getListOfTokensSupportedByAAVE,
   // getApprove1inchData,
   tokenDataJson,
+  tokenDataAddressJson,
   get1InchQuote,
   get1InchSwapData,
 } from "../helpers/abiHelpers";
@@ -21,7 +22,6 @@ import "./NewUI.styles.scss";
 import clsx from "clsx";
 import { debounce } from "debounce";
 import UserData from "./UserData";
-import Positions from "./Positions";
 
 const { Header, Content } = Layout;
 
@@ -60,6 +60,7 @@ function NewUI(props) {
 
   //* --- state variables ---
   const [isLoading, updateIsLoading] = useState("long");
+  const [positions, updatePositions] = useState();
   const [leverageType, updateLeverageType] = useState("long");
   const [collateralAmount, updateCollateralAmount] = useState("");
   const [leverageAmount, updateLeverageAmount] = useState("");
@@ -426,10 +427,42 @@ function NewUI(props) {
     await tx.wait();
   };
 
+  const getPositions = async () => {
+    let positions = [];
+    const positionsLength = await contract.positionsLength(signer.getAddress());
+    const positionsConv = parseInt(positionsLength.toString());
+    for (let i = 0; i < positionsConv; i++) {
+      let position = await contract.positions(signer.getAddress(), i);
+      let { collateral, leveragedAsset, collateralAmount, leveragedAmount, direction, id, leverage } = position;
+      collateralAmount = ethers.utils.formatUnits(position.collateralAmount, tokenDataAddressJson[collateral].decimal);
+      leveragedAmount = ethers.utils.formatUnits(
+        position.leveragedAmount,
+        tokenDataAddressJson[leveragedAsset].decimal,
+      );
+      direction = ethers.utils.formatUnits(position.direction);
+      id = ethers.utils.formatUnits(position.id);
+      leverage = ethers.utils.formatUnits(position.leverage);
+      const collateralSymbol = tokenDataAddressJson[collateral].symbol;
+      const leveragedAssetSymbol = tokenDataAddressJson[leveragedAsset].symbol;
+      positions.push({
+        collateral,
+        leveragedAmount,
+        collateralAmount,
+        leveragedAmount,
+        direction,
+        id,
+        leverage,
+        collateralSymbol,
+        leveragedAssetSymbol,
+      });
+    }
+    console.log(positions);
+    // updatePositions(positions);
+  };
+
   return (
     <Layout>
-      {/* <Positions signer={signer} /> */}
-      <Header className="header-levaave">
+      <Header className="header-levaave" onClick={getPositions}>
         <div style={{ display: "flex" }}>
           <div style={{ marginLeft: "40px" }}>
             <svg width="28px" height="36px" viewBox="0 0 28 36" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -718,7 +751,7 @@ function NewUI(props) {
             </div>
           </div>
 
-          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} />
+          <UserData signer={signer} liveAsset={selectedLeverageCurrencyType} contract={contract} />
           <Popover
             placement="auto"
             isOpen={isSelectingCollateralCurrency}

@@ -15,6 +15,18 @@ contract LevAave is FlashLoanReceiverBase {
 
     constructor(ILendingPoolAddressesProvider _addressProvider) public FlashLoanReceiverBase(_addressProvider) {}
 
+    mapping(address => Position[]) public positions;
+
+    struct Position {
+      uint256 id;
+      uint256 direction; // 0 long 1 short
+      address collateral;
+      address leveragedAsset;
+      uint256 collateralAmount;
+      uint256 leveragedAmount;
+      uint256 leverage;
+    }
+
     struct SlotInfo {
         uint256 balance;
         uint256 wethBalance;
@@ -58,7 +70,6 @@ contract LevAave is FlashLoanReceiverBase {
             IERC20(slot.asset).transferFrom(slot.sender, address(this), slot.amount.div(slot.leverage));
             // update collateral balance
             slot.balance = IERC20(slot.asset).balanceOf(address(this));
-            console.log("collateralBalance", slot.balance);
             // approve for 1inch
             if (IERC20(slot.asset).allowance(address(this), address(oneInch)) < slot.balance) {
                 IERC20(slot.asset).approve(address(oneInch), uint256(-1));
@@ -76,6 +87,8 @@ contract LevAave is FlashLoanReceiverBase {
             slot.wethBalance = IERC20(slot.positionAsset).balanceOf(address(this));
             pool.deposit(slot.positionAsset, slot.wethBalance, slot.sender, 0);
             pool.borrow(slot.asset, slot.amount.add(premiums[0]), 2, 0, slot.sender);
+            Position memory newPosition = Position(positions[slot.sender].length, 0, slot.asset, slot.positionAsset, slot.amount, slot.balance, slot.leverage);
+            positions[slot.sender].push(newPosition);
         }
 
         // close long position
@@ -197,5 +210,9 @@ contract LevAave is FlashLoanReceiverBase {
         uint16 referralCode = 0;
 
         LENDING_POOL.flashLoan(address(this), assets, amounts, modes, onBehalfOf, params, referralCode);
+    }
+
+    function positionsLength(address sender) external view returns(uint256) {
+      return positions[sender].length;
     }
 }
