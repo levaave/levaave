@@ -256,9 +256,9 @@ function UserData(props) {
               </tr>
             </thead>
             <tbody>
-              {activeTokenData.map((tokenData, index) => {
+              {activeTokenData.map(tokenData => {
                 return (
-                  <tr>
+                  <tr key={tokenData.symbol}>
                     <th scope="row">
                       <img className="swap-page-input-body-button-img" src={tokenDataJson[tokenData.symbol].logo}></img>
                     </th>
@@ -295,8 +295,8 @@ function UserData(props) {
           <div className="ghost">
             <svg width="73px" height="93px" viewBox="0 0 73 93" version="1.1" xmlns="http://www.w3.org/2000/svg">
               <title>noun_Ghost_2076593 Copy</title>
-              <g id="Proto-V5-Green" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <g id="2" transform="translate(-964.000000, -357.000000)" fill="#858585" fill-rule="nonzero">
+              <g id="Proto-V5-Green" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                <g id="2" transform="translate(-964.000000, -357.000000)" fill="#858585" fillRule="nonzero">
                   <g id="Group-2" transform="translate(680.000000, 112.000000)">
                     <g id="noun_Ghost_2076593-Copy" transform="translate(284.128463, 245.500000)">
                       <path
