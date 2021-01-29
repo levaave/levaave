@@ -268,7 +268,7 @@ function NewUI(props) {
     updateLeverageAmount(amount);
     updateIsLoading(true);
     updateCollateralAmount("");
-    if (amount.length>0) {
+    if (amount.length > 0) {
       let leverageAmountInWei = ethers.utils.parseEther(amount);
       const quotedCollateralAmountInWei = await getSwapQuote(
         selectedLeverageCurrencyType.value,
@@ -291,8 +291,10 @@ function NewUI(props) {
     // }
     updateCollateralAmount(amount);
     if (amount.length > 0) {
-
-      let collateralAmountInWei = ethers.utils.parseUnits(amount, tokenDataJson[selectedCollateralCurrencyType.label].decimal);
+      let collateralAmountInWei = ethers.utils.parseUnits(
+        amount,
+        tokenDataJson[selectedCollateralCurrencyType.label].decimal,
+      );
       updateLeverageAmount("");
       updateIsLoading(true);
 
@@ -381,6 +383,36 @@ function NewUI(props) {
     await tx.wait();
   };
 
+  const closeLong = async () => {
+    const tx = await contract.myFlashLoanCall(
+      "", // collateral
+      "", // leveraged token
+      "", // leveraged atoken
+      "", // collateral debt token
+      "", // amount of collateral debt
+      1, // operation
+      0,
+      "", // 1inch calldata
+      0,
+    );
+    await tx.wait();
+  };
+
+  const closeShort = async () => {
+    const tx = await contract.myFlashLoanCall(
+      "", // asset shorted
+      "", // collateral token
+      "", // collaterall atoken
+      "", // asset shorted debt token
+      0, // amount of asset shorted debt
+      3, // operation
+      0,
+      "", // 1inch calldata
+      0,
+    );
+    await tx.wait();
+  };
+
   return (
     <Layout>
       {/* <Positions signer={signer} /> */}
@@ -413,16 +445,12 @@ function NewUI(props) {
           )}
           {web3Modal && web3Modal.cachedProvider ? (
             <button className="connect-button logout" onClick={logoutOfWeb3Modal}>
-              <WalletOutlined 
-                style={{marginRight: '5px'}}
-              />
+              <WalletOutlined style={{ marginRight: "5px" }} />
               Logout
             </button>
           ) : (
             <button className="connect-button" onClick={loadWeb3Modal}>
-              <WalletOutlined 
-                style={{marginRight: '5px'}}
-              />
+              <WalletOutlined style={{ marginRight: "5px" }} />
               Connect Wallet
             </button>
           )}

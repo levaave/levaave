@@ -238,9 +238,11 @@ function UserData(props) {
     <>
       {activeTokenData ? (
         <div className="table-positions">
-          <div style={{display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #1b432d'}}>
+          <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #1b432d" }}>
             <div className="table-positions-label">Positions</div>
-            <div style={{ color: "#cbcbcb", fontSize:'15px' }}>Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0,7)}</div>
+            <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
+              Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0, 4)}
+            </div>
           </div>
 
           <Table borderless style={{ color: "#A5A5A5" }} className="main-table">
@@ -261,9 +263,21 @@ function UserData(props) {
                       <img className="swap-page-input-body-button-img" src={tokenDataJson[tokenData.symbol].logo}></img>
                     </th>
                     <td>{tokenData.symbol}</td>
-                    <td>{tokenData.variable ? ethers.utils.formatEther(tokenData.variable.toString()) : 0}</td>
-                    <td>{tokenData.stable ? ethers.utils.formatEther(tokenData.stable.toString()) : 0}</td>
-                    <td>{tokenData.aToken ? ethers.utils.formatEther(tokenData.aToken.toString()).slice(0, 7) : 0}</td>
+                    <td>
+                      {tokenData.variable
+                        ? parseFloat(ethers.utils.formatEther(tokenData.variable.toString())).toFixed(2).toString()
+                        : 0}
+                    </td>
+                    <td>
+                      {tokenData.stable
+                        ? parseFloat(ethers.utils.formatEther(tokenData.stable.toString())).toFixed(2).toString()
+                        : 0}
+                    </td>
+                    <td>
+                      {tokenData.aToken
+                        ? parseFloat(ethers.utils.formatEther(tokenData.aToken.toString())).toFixed(2).toString()
+                        : 0}
+                    </td>
                     <td>
                       <button className="close-position-button" onClick={closeLong}>
                         Close
