@@ -116,6 +116,7 @@ contract LevAave is FlashLoanReceiverBase {
             // send collateral back to user
             slot.balance = IERC20(slot.asset).balanceOf(address(this));
             IERC20(slot.asset).transfer(slot.sender, slot.balance - slot.amount.add(premiums[0]));
+            delete positions[slot.sender][slot.leverage];
         }
 
         // open short position

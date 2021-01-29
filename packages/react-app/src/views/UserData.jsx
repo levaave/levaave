@@ -27,7 +27,7 @@ function UserData(props) {
   const POOL_ADDRESSES_PROVIDER_ADDRESS = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
   const PROTOCOL_DATA_PROVIDER = "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d";
   const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
-  const { signer, liveAsset, contract, positions } = props;
+  const { signer, liveAsset, positions, closeLong } = props;
 
   let addressProviderContract = new ethers.Contract(POOL_ADDRESSES_PROVIDER_ADDRESS, IAddressProvider, signer);
   let dataProviderContract = new ethers.Contract(PROTOCOL_DATA_PROVIDER, IDataProvider, signer);
@@ -232,13 +232,15 @@ function UserData(props) {
   //  debugger;
   return (
     <>
-      {(positions && positions.length > 0) ? (
+      {positions && positions.length > 0 ? (
         <div className="table-positions">
           <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #1b432d" }}>
             <div className="table-positions-label">Positions</div>
-            {userAccountData && <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
-              Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0, 4)}
-            </div>}
+            {userAccountData && (
+              <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
+                Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0, 4)}
+              </div>
+            )}
           </div>
 
           <Table borderless style={{ color: "#A5A5A5" }} className="main-table">
@@ -253,32 +255,50 @@ function UserData(props) {
             <tbody>
               {positions.map(positionData => {
                 return (
-                  <tr>
+                  <tr key={positionData.id}>
                     <th scope="row">
-                      {positionData.collateralSymbol}
-                      {' '}
+                      {positionData.collateralSymbol}{" "}
                       {/* <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.collateralSymbol].logo}></img> */}
-                      {' - '}
-                      {positionData.leveragedAssetSymbol}
-                      {' '}
+                      {" - "}
+                      {positionData.leveragedAssetSymbol}{" "}
                       {/* <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.leveragedAssetSymbol].logo}></img> */}
                     </th>
                     <td>
-                    <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.collateralSymbol].logo}></img>
-                      {'  '}
-                      {positionData.collateralAmount}{' '}{positionData.collateralSymbol}
+                      <img
+                        className="swap-page-input-body-button-img"
+                        src={tokenDataJson[positionData.collateralSymbol].logo}
+                      ></img>
+                      {"  "}
+                      {positionData.collateralAmount} {positionData.collateralSymbol}
                     </td>
-                    {positionData.direction === '0.0' ? 
-                    (<td style={{color: "#20bb56",fontStyle: 'italic'}}>LONG</td>):
-                    (<td style={{color:"#ed5c5c", fontStyle: 'italic'}}>SHORT</td>)
-                    }
+                    {positionData.direction === "0.0" ? (
+                      <td style={{ color: "#20bb56", fontStyle: "italic" }}>LONG</td>
+                    ) : (
+                      <td style={{ color: "#ed5c5c", fontStyle: "italic" }}>SHORT</td>
+                    )}
                     <td>
-                      <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.leveragedAssetSymbol].logo}></img>
-                      {'  '}
-                      {positionData.leveragedAmount.slice(0,8)}{' '}{positionData.leveragedAssetSymbol}
+                      <img
+                        className="swap-page-input-body-button-img"
+                        src={tokenDataJson[positionData.leveragedAssetSymbol].logo}
+                      ></img>
+                      {"  "}
+                      {positionData.leveragedAmount.slice(0, 8)} {positionData.leveragedAssetSymbol}
                     </td>
                     <td>
-                      <button className="close-position-button">Close</button>
+                      <button
+                        className="close-position-button"
+                        onClick={() =>
+                          closeLong({
+                            collateral: positionData.collateral,
+                            leveragedAsset: positionData.leveragedAsset,
+                            collateralAmount: positionData.collateralAmount,
+                            leveragedAmount: positionData.leveragedAmount,
+                            id: positionData.id,
+                          })
+                        }
+                      >
+                        Close
+                      </button>
                     </td>
                   </tr>
                 );
