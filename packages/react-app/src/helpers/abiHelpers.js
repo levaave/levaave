@@ -8,6 +8,97 @@ export async function getListOfTokensSupportedByAAVE(contract) {
   } catch (e) {
     console.log(e);
   }
+};
+
+export const tokenDataAddressJson = {
+  "0xdAC17F958D2ee523a2206206994597C13D831ec7": {
+    symbol: "USDT",
+    decimal: 6,
+  },
+  "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": {
+    symbol: "WBTC",
+    decimal: 8,
+  },
+  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2": {
+    symbol: "WETH",
+    decimal: 18,
+  },
+  "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e": {
+    symbol: "YFI",
+    decimal: 18,
+  },
+  "0xE41d2489571d322189246DaFA5ebDe1F4699F498": {
+    symbol: "ZRX",
+    decimal: 18,
+  },
+  "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984": {
+    symbol: "UNI",
+    decimal: 18,
+  },
+  "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9": {
+    symbol: "AAVE",
+    decimal: 18,
+  },
+  "0x0D8775F648430679A709E98d2b0Cb6250d2887EF": {
+    symbol: "BAT",
+    decimal: 18,
+  },
+  "0x4Fabb145d64652a948d72533023f6E7A623C7C53": {
+    symbol: "BUSD",
+    decimal: 18,
+  },
+  "0x6B175474E89094C44Da98b954EedeAC495271d0F": {
+    symbol: "DAI",
+    decimal: 18,
+  },
+  "0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c": {
+    symbol: "ENJ",
+    decimal: 18,
+  },
+  "0xdd974D5C2e2928deA5F71b9825b8b646686BD200": {
+    symbol: "KNC",
+    decimal: 18,
+  },
+  "0x514910771AF9Ca656af840dff83E8264EcF986CA": {
+    symbol: "LINK",
+    decimal: 18,
+  },
+  "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942": {
+    symbol: "MANA",
+    decimal: 18,
+  },
+  "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2":{
+    symbol: "MKR",
+    decimal: 18,
+  },
+  "0x408e41876cCCDC0F92210600ef50372656052a38": {
+    symbol: "REN",
+    decimal: 18,
+  },
+  "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F": {
+    symbol: "SNX",
+    decimal: 18,
+  },
+  "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51": {
+    symbol: "sUSD",
+    decimal: 18,
+  },
+  "0x0000000000085d4780B73119b644AE5ecd22b376": {
+    symbol: "TUSD",
+    decimal: 18,
+  },
+  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": {
+    symbol: "USDC",
+    decimal: 6,
+  },
+  "0xD533a949740bb3306d119CC777fa900bA034cd52": {
+    symbol: "CRV",
+    decimal: 18,
+  },
+  "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd": {
+    symbol: "GUSD",
+    decimal: 2,
+  }
 }
 
 export const tokenDataJson = {
