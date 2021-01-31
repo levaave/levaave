@@ -428,8 +428,8 @@ function NewUI(props) {
   };
 
   const closeShort = async data => {
-    const collateralReserveTokens = await dataProviderContract.getReserveTokensAddresses(data.collateral);
-    const leverageReserveTokens = await dataProviderContract.getReserveTokensAddresses(data.leveragedAsset);
+    const collateralReserveTokens = await dataProviderContract.getReserveTokensAddresses(data.leveragedAsset);
+    const leverageReserveTokens = await dataProviderContract.getReserveTokensAddresses(data.collateral);
     if (!(await isCollateralApproved(leverageReserveTokens.aTokenAddress, "1000000"))) {
       const txApproveCollateral = await approveCollateral(leverageReserveTokens.aTokenAddress);
       if (!txApproveCollateral) {
@@ -437,16 +437,21 @@ function NewUI(props) {
       }
     }
     let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    console.log("amount1inc", amountFor1Inch);
+    console.log("collateral", data.collateral); // weth
+    console.log("leveragedasset", data.leveragedAsset); // link
+    console.log("leveragedAmount", data.leveragedAmount); // 3
+    console.log("collateralAmount", data.collateralAmount); // 117
     let swapData = await get1InchSwapData(
-      data.leveragedAsset,
       data.collateral,
+      data.leveragedAsset,
       amountFor1Inch,
       ourContractAddress,
       maximumSlippageApproved,
     );
     const tx = await contract.myFlashLoanCall(
-      data.collateral, // collateral
       data.leveragedAsset, // leveraged token
+      data.collateral, // collateral
       leverageReserveTokens.aTokenAddress, // leveraged atoken
       collateralReserveTokens.variableDebtTokenAddress, // collateral debt token
       ethers.utils.parseUnits(data.collateralAmount), // amount of collateral debt
