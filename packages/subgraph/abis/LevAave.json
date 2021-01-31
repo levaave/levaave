@@ -103,9 +103,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint8",
         "name": "operation",
-        "type": "uint256"
+        "type": "uint8"
       },
       {
         "internalType": "uint256",
@@ -118,9 +118,9 @@
         "type": "bytes"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint8",
         "name": "leverage",
-        "type": "uint256"
+        "type": "uint8"
       }
     ],
     "name": "myFlashLoanCall",
@@ -149,9 +149,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint8",
         "name": "direction",
-        "type": "uint256"
+        "type": "uint8"
       },
       {
         "internalType": "address",
@@ -171,11 +171,6 @@
       {
         "internalType": "uint256",
         "name": "leveragedAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "leverage",
         "type": "uint256"
       }
     ],

@@ -406,10 +406,6 @@ function NewUI(props) {
       }
     }
     let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
-    console.log(data.collateralAmount);
-    console.log("ammmmmm", amountFor1Inch);
-    console.log("leveragedasset", data.leveragedAsset);
-    console.log("collateral", data.collateral);
     let swapData = await get1InchSwapData(
       data.leveragedAsset,
       data.collateral,
@@ -431,17 +427,33 @@ function NewUI(props) {
     await tx.wait();
   };
 
-  const closeShort = async () => {
+  const closeShort = async data => {
+    const collateralReserveTokens = await dataProviderContract.getReserveTokensAddresses(data.collateral);
+    const leverageReserveTokens = await dataProviderContract.getReserveTokensAddresses(data.leveragedAsset);
+    if (!(await isCollateralApproved(leverageReserveTokens.aTokenAddress, "1000000"))) {
+      const txApproveCollateral = await approveCollateral(leverageReserveTokens.aTokenAddress);
+      if (!txApproveCollateral) {
+        return;
+      }
+    }
+    let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    let swapData = await get1InchSwapData(
+      data.leveragedAsset,
+      data.collateral,
+      amountFor1Inch,
+      ourContractAddress,
+      maximumSlippageApproved,
+    );
     const tx = await contract.myFlashLoanCall(
-      "", // asset shorted
-      "", // collateral token
-      "", // collaterall atoken
-      "", // asset shorted debt token
-      0, // amount of asset shorted debt
+      data.collateral, // collateral
+      data.leveragedAsset, // leveraged token
+      leverageReserveTokens.aTokenAddress, // leveraged atoken
+      collateralReserveTokens.variableDebtTokenAddress, // collateral debt token
+      ethers.utils.parseUnits(data.collateralAmount), // amount of collateral debt
       3, // operation
       0,
-      "", // 1inch calldata
-      0,
+      swapData.tx.data, // 1inch calldata
+      data.id,
     );
     await tx.wait();
   };
@@ -453,9 +465,9 @@ function NewUI(props) {
     const positionsConv = parseInt(positionsLength.toString());
     for (let i = 0; i < positionsConv; i++) {
       let position = await contract.positions(signer.getAddress(), i);
-      let { collateral, leveragedAsset, collateralAmount, leveragedAmount, direction, id, leverage } = position;
+      let { collateral, leveragedAsset, collateralAmount, leveragedAmount, direction, id } = position;
       if (collateral === "0x0000000000000000000000000000000000000000") {
-        return;
+        continue;
       }
       collateralAmount = ethers.utils.formatUnits(position.collateralAmount, tokenDataAddressJson[collateral].decimal);
       leveragedAmount = ethers.utils.formatUnits(
@@ -464,7 +476,6 @@ function NewUI(props) {
       );
       direction = ethers.utils.formatUnits(position.direction);
       id = parseInt(ethers.utils.formatUnits(position.id, 0));
-      leverage = parseInt(ethers.utils.formatUnits(position.leverage, 0));
       const collateralSymbol = tokenDataAddressJson[collateral].symbol;
       const leveragedAssetSymbol = tokenDataAddressJson[leveragedAsset].symbol;
       positions.push({
@@ -474,12 +485,11 @@ function NewUI(props) {
         leveragedAmount,
         direction,
         id,
-        leverage,
         collateralSymbol,
         leveragedAssetSymbol,
       });
     }
-    console.log(positions);
+    console.log("positions", positions);
     updatePositions(positions);
   };
 
@@ -781,6 +791,7 @@ function NewUI(props) {
             liveAsset={selectedLeverageCurrencyType}
             positions={positions}
             closeLong={closeLong}
+            closeShort={closeShort}
           />
           <Popover
             placement="auto"

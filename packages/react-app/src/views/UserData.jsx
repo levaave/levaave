@@ -27,7 +27,7 @@ function UserData(props) {
   const POOL_ADDRESSES_PROVIDER_ADDRESS = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
   const PROTOCOL_DATA_PROVIDER = "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d";
   const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
-  const { signer, liveAsset, positions, closeLong } = props;
+  const { signer, liveAsset, positions, closeLong, closeShort } = props;
 
   let addressProviderContract = new ethers.Contract(POOL_ADDRESSES_PROVIDER_ADDRESS, IAddressProvider, signer);
   let dataProviderContract = new ethers.Contract(PROTOCOL_DATA_PROVIDER, IDataProvider, signer);
@@ -247,9 +247,9 @@ function UserData(props) {
             <thead>
               <tr>
                 <th>Pair</th>
-                <th>Collateral Amount</th>
+                <th>Loaned Amount</th>
                 <th>Position</th>
-                <th>ATokens</th>
+                <th>Leveraged Asset</th>
               </tr>
             </thead>
             <tbody>
@@ -287,14 +287,24 @@ function UserData(props) {
                     <td>
                       <button
                         className="close-position-button"
-                        onClick={() =>
-                          closeLong({
-                            collateral: positionData.collateral,
-                            leveragedAsset: positionData.leveragedAsset,
-                            collateralAmount: positionData.collateralAmount,
-                            leveragedAmount: positionData.leveragedAmount,
-                            id: positionData.id,
-                          })
+                        onClick={
+                          positionData.direction === 0
+                            ? () =>
+                                closeLong({
+                                  collateral: positionData.collateral,
+                                  leveragedAsset: positionData.leveragedAsset,
+                                  collateralAmount: positionData.collateralAmount,
+                                  leveragedAmount: positionData.leveragedAmount,
+                                  id: positionData.id,
+                                })
+                            : () =>
+                                closeShort({
+                                  collateral: positionData.collateral,
+                                  leveragedAsset: positionData.leveragedAsset,
+                                  collateralAmount: positionData.collateralAmount,
+                                  leveragedAmount: positionData.leveragedAmount,
+                                  id: positionData.id,
+                                })
                         }
                       >
                         Close
