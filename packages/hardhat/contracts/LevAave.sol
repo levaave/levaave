@@ -15,6 +15,9 @@ contract LevAave is FlashLoanReceiverBase {
     constructor(ILendingPoolAddressesProvider _addressProvider) public FlashLoanReceiverBase(_addressProvider) {}
 
     mapping(address => Position[]) public positions;
+    mapping(address => uint256) public positionsOpen;
+
+    event TransactionSuccess(address userAddress, uint8 leverageType, uint8 leverageMultiplier, address collateralTokenAddress, uint256 collateralAmount, address leverageTokenAddress, uint256 leverageAmount);
 
     struct Position {
       uint256 id;
@@ -86,6 +89,7 @@ contract LevAave is FlashLoanReceiverBase {
             // save position info in storage
             Position memory newPosition = Position(positions[slot.sender].length, 0, slot.asset, slot.positionAsset, slot.amount, slot.balance);
             positions[slot.sender].push(newPosition);
+            positionsOpen[slot.sender]++;
         }
 
         // close long position
@@ -97,10 +101,9 @@ contract LevAave is FlashLoanReceiverBase {
             // first repay the debt of the user using the flashloan funds
             LENDING_POOL.repay(slot.asset, slot.amount, 2, slot.sender);
             // transfer atoken from user to contract
-            uint256 collateralBalance = IERC20(slot.apositionAsset).balanceOf(slot.sender);
-            IERC20(slot.apositionAsset).transferFrom(slot.sender, address(this), collateralBalance);
+            IERC20(slot.apositionAsset).transferFrom(slot.sender, address(this), slot.collateralAmount);
             // transform atoken in token
-            LENDING_POOL.withdraw(slot.positionAsset, collateralBalance, address(this));
+            LENDING_POOL.withdraw(slot.positionAsset, slot.collateralAmount, address(this));
             // update balance
             slot.balance = IERC20(slot.positionAsset).balanceOf(address(this));
             // approve for 1inch
@@ -115,6 +118,7 @@ contract LevAave is FlashLoanReceiverBase {
             IERC20(slot.asset).transfer(slot.sender, slot.balance - slot.amount.add(premiums[0]));
             // remove position info from storage
             delete positions[slot.sender][slot.leverage];
+            positionsOpen[slot.sender]--;
         }
 
         // open short position
@@ -141,6 +145,7 @@ contract LevAave is FlashLoanReceiverBase {
             // save position info in storage
             Position memory newPosition = Position(positions[slot.sender].length, 1, slot.positionAsset, slot.asset, slot.amount, slot.balance);
             positions[slot.sender].push(newPosition);
+            positionsOpen[slot.sender]++;
         }
 
         // close short position
@@ -170,7 +175,10 @@ contract LevAave is FlashLoanReceiverBase {
             IERC20(slot.asset).transfer(slot.sender, slot.balance - slot.amount.add(premiums[0]));
             // remove position info from storage
             delete positions[slot.sender][slot.leverage];
+            positionsOpen[slot.sender]--;
         }
+
+        emit TransactionSuccess(slot.sender, slot.operation, slot.leverage, slot.asset, slot.amount, slot.positionAsset, slot.collateralAmount);
 
         // necessary to repay the loan
         for (uint256 i = 0; i < assets.length; i++) {
@@ -200,8 +208,12 @@ contract LevAave is FlashLoanReceiverBase {
             amounts[0] = amount;
         }
         if (operation == 1 || operation == 3) {
-            uint256 debt = IERC20(debtAsset).balanceOf(msg.sender);
-            amounts[0] = debt;
+            if(positionsOpen[msg.sender] == 1) {
+              uint256 debt = IERC20(debtAsset).balanceOf(msg.sender); 
+              amounts[0] = debt;
+            } else {
+              amounts[0] = amount;
+            }
         }
 
         // 0 = no debt, 1 = stable, 2 = variable

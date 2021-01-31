@@ -406,6 +406,12 @@ function NewUI(props) {
       }
     }
     let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    console.log("amount1inc", amountFor1Inch);
+    console.log("collateral", data.collateral); // weth
+    console.log("leveragedasset", data.leveragedAsset); // link
+    console.log("leveragedAmount", data.leveragedAmount); // 3
+    console.log("collateralAmount", data.collateralAmount); // 117
+    console.log("DDDEEEBBTT", collateralReserveTokens.variableDebtTokenAddress);
     let swapData = await get1InchSwapData(
       data.leveragedAsset,
       data.collateral,
@@ -420,7 +426,7 @@ function NewUI(props) {
       collateralReserveTokens.variableDebtTokenAddress, // collateral debt token
       ethers.utils.parseUnits(data.collateralAmount), // amount of collateral debt
       1, // operation
-      0,
+      ethers.utils.parseUnits(data.leveragedAmount),
       swapData.tx.data, // 1inch calldata
       data.id,
     );
@@ -442,6 +448,7 @@ function NewUI(props) {
     console.log("leveragedasset", data.leveragedAsset); // link
     console.log("leveragedAmount", data.leveragedAmount); // 3
     console.log("collateralAmount", data.collateralAmount); // 117
+    console.log("DDDEEEBBTT", collateralReserveTokens.variableDebtTokenAddress);
     let swapData = await get1InchSwapData(
       data.collateral,
       data.leveragedAsset,

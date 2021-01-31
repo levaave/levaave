@@ -288,7 +288,7 @@ function UserData(props) {
                       <button
                         className="close-position-button"
                         onClick={
-                          positionData.direction === 0
+                          positionData.direction === "0.0"
                             ? () =>
                                 closeLong({
                                   collateral: positionData.collateral,
