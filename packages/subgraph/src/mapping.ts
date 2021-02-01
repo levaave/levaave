@@ -1,11 +1,11 @@
 import { BigInt, Address } from "@graphprotocol/graph-ts"
 import {
   YourContract,
-  SetPurpose
+  TransactionSuccess
 } from "../generated/YourContract/YourContract"
 import { Purpose, Sender } from "../generated/schema"
 
-export function handleSetPurpose(event: SetPurpose): void {
+export function handleTransactionSuccess(event: TransactionSuccess): void {
 
   let senderString = event.params.sender.toHexString()
 

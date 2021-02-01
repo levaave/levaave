@@ -3,23 +3,23 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
+    name: LevAave
     network: localhost
     source:
-      address: '{{YourContractAddress}}'
-      abi: YourContract
+      address: '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+      abi: LevAave
       startBlock: 1
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - Purpose
-        - Sender
+        - User
+        - Transaction
       abis:
-        - name: YourContract
-          file: ./abis/YourContract.json
+        - name: LevAave
+          file: ./abis/LevAave.json.json
       eventHandlers:
-        - event: SetPurpose(address,string)
-          handler: handleSetPurpose
+        - event: TransactionSuccess(address,string)
+          handler: handleTransactionSuccess
       file: ./src/mapping.ts

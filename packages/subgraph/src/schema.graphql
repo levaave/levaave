@@ -1,15 +1,22 @@
-type Purpose @entity {
+type User @entity {
   id: ID!
   sender: Sender!
-  purpose: String!
+  : String!
+  transactions: [Transaction!]! @derivedFrom(field: "user")
   createdAt: BigInt!
-  transactionHash: String!
 }
 
-type Sender @entity {
+type Transaction @entity{ 
   id: ID!
-  address: Bytes!
-  purposes: [Purpose!] @derivedFrom(field: "sender")
-  createdAt: BigInt!
-  purposeCount: BigInt!
+  user: User!
+  leverageMultiplier: Int!
+  leverageType: String!
+  isActive: Boolean!
+  debtToken: Token!
+  leverageToken: Token!
+  transactionHash: BigInt!
+}
+
+type Token @entity{
+
 }
