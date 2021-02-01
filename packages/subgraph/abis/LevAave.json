@@ -11,55 +11,6 @@
     "type": "constructor"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "userAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "leverageType",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "leverageMultiplier",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "collateralTokenAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "collateralAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "leverageTokenAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "leverageAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TransactionSuccess",
-    "type": "event"
-  },
-  {
     "inputs": [],
     "name": "ADDRESSES_PROVIDER",
     "outputs": [
@@ -83,6 +34,97 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "loanAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "positionAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "apositionAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "debtToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "collateralAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "id",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes",
+        "name": "oneInchData",
+        "type": "bytes"
+      }
+    ],
+    "name": "closeLong",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "loanAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "positionAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "apositionAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "debtToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "id",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes",
+        "name": "oneInchData",
+        "type": "bytes"
+      }
+    ],
+    "name": "closeShort",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -137,42 +179,22 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "apositionAsset",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "debtAsset",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       },
       {
         "internalType": "uint8",
-        "name": "operation",
+        "name": "leverage",
         "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "collateralAmount",
-        "type": "uint256"
       },
       {
         "internalType": "bytes",
         "name": "oneInchData",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint8",
-        "name": "leverage",
-        "type": "uint8"
       }
     ],
-    "name": "myFlashLoanCall",
+    "name": "longLeverage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -262,6 +284,39 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "loanAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "positionAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "collateralAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "oneInchData",
+        "type": "bytes"
+      }
+    ],
+    "name": "shortLeverage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

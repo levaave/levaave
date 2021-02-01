@@ -345,16 +345,12 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    const tx = await contract.myFlashLoanCall(
+    const tx = await contract.longLeverage(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
-      aTokensAddress[selectedLeverageCurrencyType.label],
-      "0x0000000000000000000000000000000000000000",
       collateralValueInWei,
-      0,
-      0,
-      swapData.tx.data,
       leverageMultiplier,
+      swapData.tx.data,
     );
     await tx.wait();
   };
@@ -382,16 +378,12 @@ function NewUI(props) {
     );
     console.log("shortcollateral", shortCollateral.toString());
     console.log("collateralAmount", collateralAmount.toString());
-    const tx = await contract.myFlashLoanCall(
+    const tx = await contract.shortLeverage(
       selectedLeverageCurrencyType.value, // asset to short
       selectedCollateralCurrencyType.value, // collateral
-      "0x0000000000000000000000000000000000000000",
-      "0x0000000000000000000000000000000000000000",
       shortCollateral, // amount asset to short
-      2, // operation
       ethers.utils.parseEther(collateralAmount), //collateral amount
       swapData.tx.data,
-      0,
     );
     await tx.wait();
   };
@@ -419,16 +411,15 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    const tx = await contract.myFlashLoanCall(
+    const tx = await contract.closeLong(
       data.collateral, // collateral
       data.leveragedAsset, // leveraged token
       leverageReserveTokens.aTokenAddress, // leveraged atoken
       collateralReserveTokens.variableDebtTokenAddress, // collateral debt token
       ethers.utils.parseUnits(data.collateralAmount), // amount of collateral debt
-      1, // operation
       ethers.utils.parseUnits(data.leveragedAmount),
-      swapData.tx.data, // 1inch calldata
       data.id,
+      swapData.tx.data, // 1inch calldata
     );
     await tx.wait();
   };
@@ -456,16 +447,14 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    const tx = await contract.myFlashLoanCall(
+    const tx = await contract.closeShort(
       data.leveragedAsset, // leveraged token
       data.collateral, // collateral
       leverageReserveTokens.aTokenAddress, // leveraged atoken
       collateralReserveTokens.variableDebtTokenAddress, // collateral debt token
       ethers.utils.parseUnits(data.collateralAmount), // amount of collateral debt
-      3, // operation
-      0,
-      swapData.tx.data, // 1inch calldata
       data.id,
+      swapData.tx.data, // 1inch calldata
     );
     await tx.wait();
   };
