@@ -65,7 +65,7 @@ function NewUI(props) {
   const [collateralAmount, updateCollateralAmount] = useState("");
   const [leverageAmount, updateLeverageAmount] = useState("");
   const [maximumSlippageApproved, updateMaximumSlippageApproved] = useState(1);
-  const [leverageMultiplier, updateLeverageMultiplier] = useState(2);
+  const [leverageMultiplier, updateLeverageMultiplier] = useState(1);
   const [isSelectingCollateralCurrency, updateIsSelectingCollateralCurrency] = useState(false);
   const [isSelectingLeverageCurrency, updateIsSelectingLeverageCurrency] = useState(false);
   const [selectedCollateralCurrencyType, updateSelectedCollateralCurrencyType] = useState({
@@ -453,6 +453,7 @@ function NewUI(props) {
       leverageReserveTokens.aTokenAddress, // leveraged atoken
       collateralReserveTokens.variableDebtTokenAddress, // collateral debt token
       ethers.utils.parseUnits(data.collateralAmount), // amount of collateral debt
+      ethers.utils.parseUnits(data.leveragedAmount), //amount of atoken
       data.id,
       swapData.tx.data, // 1inch calldata
     );
