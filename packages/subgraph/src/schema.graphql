@@ -1,22 +1,21 @@
 type User @entity {
   id: ID!
-  sender: Sender!
-  : String!
+  address: String!
   transactions: [Transaction!]! @derivedFrom(field: "user")
   createdAt: BigInt!
 }
 
-type Transaction @entity{ 
+type Transaction @entity {
   id: ID!
   user: User!
   leverageMultiplier: Int!
-  leverageType: String!
+  leverageType: Int!
   isActive: Boolean!
-  debtToken: Token!
-  leverageToken: Token!
-  transactionHash: BigInt!
-}
-
-type Token @entity{
-
+  debtTokenAddress: String!
+  debtValue: BigInt!
+  leverageTokenAddress: String!
+  leverageValue: BigInt!
+  # transactionHash: BigInt!
+  createdAt: BigInt!
+  modifiedAt: BigInt!
 }
