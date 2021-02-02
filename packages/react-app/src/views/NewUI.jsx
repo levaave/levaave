@@ -338,7 +338,6 @@ function NewUI(props) {
     let amountFor1Inch = ethers.utils
       .parseUnits((parseFloat(convertedCollateral) + parseFloat(collateralAmount)).toString())
       .toString();
-    console.log("amount1iunch", amountFor1Inch);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
@@ -377,8 +376,6 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    console.log("shortcollateral", shortCollateral.toString());
-    console.log("collateralAmount", collateralAmount.toString());
     const tx = await contract.shortLeverage(
       selectedLeverageCurrencyType.value, // asset to short
       selectedCollateralCurrencyType.value, // collateral
@@ -408,12 +405,6 @@ function NewUI(props) {
     } else {
       amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
     }
-    console.log("amount1inc", amountFor1Inch);
-    console.log("collateral", data.collateral); // weth
-    console.log("leveragedasset", data.leveragedAsset); // link
-    console.log("leveragedAmount", data.leveragedAmount); // 3
-    console.log("collateralAmount", data.collateralAmount); // 117
-    console.log("DDDEEEBBTT", collateralReserveTokens.variableDebtTokenAddress);
     let swapData = await get1InchSwapData(
       data.leveragedAsset,
       data.collateral,
@@ -453,12 +444,6 @@ function NewUI(props) {
     } else {
       amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
     }
-    console.log("amount1inc", amountFor1Inch);
-    console.log("collateral", data.collateral); // weth
-    console.log("leveragedasset", data.leveragedAsset); // link
-    console.log("leveragedAmount", data.leveragedAmount); // 3
-    console.log("collateralAmount", data.collateralAmount); // 117
-    console.log("DDDEEEBBTT", collateralReserveTokens.variableDebtTokenAddress);
     let swapData = await get1InchSwapData(
       data.collateral,
       data.leveragedAsset,
