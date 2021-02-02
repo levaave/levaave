@@ -125,6 +125,9 @@ contract LevAave is FlashLoanReceiverBase {
         positionsOpen[sender]++;
 
         emit TransactionSuccess(sender, 0, leverage, asset, amount, positionAsset, balanceFrom1Inch);
+        console.log("assetbalance", IERC20(asset).balanceOf(address(this)));
+        console.log("positionasset", IERC20(positionAsset).balanceOf(address(this)));
+        console.log("TOPAYBACK", amount.add(premium));
     }
 
     function closeLong(
@@ -178,6 +181,9 @@ contract LevAave is FlashLoanReceiverBase {
             bytes memory oneInchData
         ) = abi.decode(params, (uint256, address, address, address, uint256, uint8, bytes));
         {
+          console.log("STARTassetbalance", IERC20(asset).balanceOf(address(this)));
+        console.log("STARTpositionasset", IERC20(positionAsset).balanceOf(address(this)));
+        console.log("STARTapositionasset", IERC20(apositionAsset).balanceOf(address(this)));
             // if no aave allowance, approve
             if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) < amount) {
                 IERC20(asset).approve(address(LENDING_POOL), uint256(-1));
@@ -212,7 +218,11 @@ contract LevAave is FlashLoanReceiverBase {
             (, bytes memory res) = oneInch.call(oneInchData);
             uint256 balanceFrom1Inch = toUint256(res);
             // send collateral back to user
+            console.log("BEFOREbalancefrom1inch",balanceFrom1Inch);
+            console.log("BEFORECRASHassetbalance", IERC20(asset).balanceOf(address(this)));
+            console.log("BEFORECRASHamount", (balanceFrom1Inch - amount.add(premium)));
             IERC20(asset).transfer(sender, balanceFrom1Inch - amount.add(premium));
+            IERC20(positionAsset).transfer(sender, IERC20(positionAsset).balanceOf(address(this)));
         }
 
         {
@@ -221,6 +231,10 @@ contract LevAave is FlashLoanReceiverBase {
             positionsOpen[sender]--;
         }
         emit TransactionSuccess(sender, 0, 0, asset, amount, positionAsset, collateralAmount);
+        console.log("assetbalance", IERC20(asset).balanceOf(address(this)));
+        console.log("positionasset", IERC20(positionAsset).balanceOf(address(this)));
+        console.log("apositionasset", IERC20(apositionAsset).balanceOf(address(this)));
+        console.log("TOPAYBACK", amount.add(premium));
     }
 
     function shortLeverage(
@@ -282,6 +296,9 @@ contract LevAave is FlashLoanReceiverBase {
         positions[sender].push(newPosition);
         positionsOpen[sender]++;
         emit TransactionSuccess(sender, 0, 0, asset, amount, positionAsset, balanceFrom1Inch);
+        console.log("assetbalance", IERC20(asset).balanceOf(address(this)));
+        console.log("positionasset", IERC20(positionAsset).balanceOf(address(this)));
+        console.log("TOPAYBACK", amount.add(premium));
     }
 
     function closeShort(
@@ -354,11 +371,18 @@ contract LevAave is FlashLoanReceiverBase {
         (, bytes memory res) = oneInch.call(oneInchData);
         uint256 balanceFrom1Inch = toUint256(res);
         // send collateral back to user
+        console.log("needtosendback",balanceFrom1Inch - amount.add(premium));
+        console.log("HAVE", IERC20(asset).balanceOf(address(this)));
         IERC20(asset).transfer(sender, balanceFrom1Inch - amount.add(premium));
+        IERC20(positionAsset).transfer(sender, IERC20(positionAsset).balanceOf(address(this)));
         // remove position info from storage
         delete positions[sender][id];
         positionsOpen[sender]--;
         emit TransactionSuccess(sender, 0, 0, asset, amount, positionAsset, atokenAmount);
+        console.log("assetbalance", IERC20(asset).balanceOf(address(this)));
+        console.log("positionasset", IERC20(positionAsset).balanceOf(address(this)));
+        console.log("apositionasset", IERC20(apositionAsset).balanceOf(address(this)));
+        console.log("TOPAYBACK", amount.add(premium));
     }
 
     function toUint256(bytes memory _bytes) internal pure returns (uint256 value) {

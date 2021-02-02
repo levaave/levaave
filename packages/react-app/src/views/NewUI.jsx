@@ -338,6 +338,7 @@ function NewUI(props) {
     let amountFor1Inch = ethers.utils
       .parseUnits((parseFloat(convertedCollateral) + parseFloat(collateralAmount)).toString())
       .toString();
+    console.log("amount1iunch", amountFor1Inch);
     let swapData = await get1InchSwapData(
       selectedCollateralCurrencyType.value,
       selectedLeverageCurrencyType.value,
@@ -397,7 +398,16 @@ function NewUI(props) {
         return;
       }
     }
-    let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    const positionsLength = await contract.positionsLength(signer.getAddress());
+    const positionsConv = parseInt(positionsLength.toString());
+    let amountFor1Inch;
+    if (positionsConv === 1) {
+      const newContract = new ethers.Contract(leverageReserveTokens.aTokenAddress, iErc20Abi, signer);
+      const balance = await newContract.balanceOf(signer.getAddress());
+      amountFor1Inch = balance.toString();
+    } else {
+      amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    }
     console.log("amount1inc", amountFor1Inch);
     console.log("collateral", data.collateral); // weth
     console.log("leveragedasset", data.leveragedAsset); // link
@@ -433,7 +443,16 @@ function NewUI(props) {
         return;
       }
     }
-    let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    const positionsLength = await contract.positionsLength(signer.getAddress());
+    const positionsConv = parseInt(positionsLength.toString());
+    let amountFor1Inch;
+    if (positionsConv === 1) {
+      const newContract = new ethers.Contract(leverageReserveTokens.aTokenAddress, iErc20Abi, signer);
+      const balance = await newContract.balanceOf(signer.getAddress());
+      amountFor1Inch = balance.toString();
+    } else {
+      amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    }
     console.log("amount1inc", amountFor1Inch);
     console.log("collateral", data.collateral); // weth
     console.log("leveragedasset", data.leveragedAsset); // link
@@ -463,7 +482,6 @@ function NewUI(props) {
   const getPositions = async () => {
     let positions = [];
     const positionsLength = await contract.positionsLength(signer.getAddress());
-    console.log(positionsLength);
     const positionsConv = parseInt(positionsLength.toString());
     for (let i = 0; i < positionsConv; i++) {
       let position = await contract.positions(signer.getAddress(), i);
