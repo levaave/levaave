@@ -816,7 +816,7 @@ function NewUI(props) {
             hideArrow
             popperClassName="custom-popover"
             innerClassName="custom-inner-popover"
-            fade={true}
+            fade={false}
             backgroundColor="rgb(33, 36, 41);"
           >
             <PopoverBody className="popover-body" style={{padding: '0px 0px'}}>
@@ -859,7 +859,7 @@ function NewUI(props) {
             hideArrow
             popperClassName="custom-popover-leverage"
             innerClassName="custom-inner-popover"
-            fade={true}
+            fade={false}
             backgroundColor="rgb(33, 36, 41);"
           >
             <PopoverBody className="popover-body" style={{padding: '0px 0px'}}>
