@@ -376,8 +376,6 @@ function NewUI(props) {
       ourContractAddress,
       maximumSlippageApproved,
     );
-    console.log("shortcollateral", shortCollateral.toString());
-    console.log("collateralAmount", collateralAmount.toString());
     const tx = await contract.shortLeverage(
       selectedLeverageCurrencyType.value, // asset to short
       selectedCollateralCurrencyType.value, // collateral
@@ -397,13 +395,16 @@ function NewUI(props) {
         return;
       }
     }
-    let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
-    console.log("amount1inc", amountFor1Inch);
-    console.log("collateral", data.collateral); // weth
-    console.log("leveragedasset", data.leveragedAsset); // link
-    console.log("leveragedAmount", data.leveragedAmount); // 3
-    console.log("collateralAmount", data.collateralAmount); // 117
-    console.log("DDDEEEBBTT", collateralReserveTokens.variableDebtTokenAddress);
+    const positionsLength = await contract.positionsLength(signer.getAddress());
+    const positionsConv = parseInt(positionsLength.toString());
+    let amountFor1Inch;
+    if (positionsConv === 1) {
+      const newContract = new ethers.Contract(leverageReserveTokens.aTokenAddress, iErc20Abi, signer);
+      const balance = await newContract.balanceOf(signer.getAddress());
+      amountFor1Inch = balance.toString();
+    } else {
+      amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    }
     let swapData = await get1InchSwapData(
       data.leveragedAsset,
       data.collateral,
@@ -433,13 +434,16 @@ function NewUI(props) {
         return;
       }
     }
-    let amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
-    console.log("amount1inc", amountFor1Inch);
-    console.log("collateral", data.collateral); // weth
-    console.log("leveragedasset", data.leveragedAsset); // link
-    console.log("leveragedAmount", data.leveragedAmount); // 3
-    console.log("collateralAmount", data.collateralAmount); // 117
-    console.log("DDDEEEBBTT", collateralReserveTokens.variableDebtTokenAddress);
+    const positionsLength = await contract.positionsLength(signer.getAddress());
+    const positionsConv = parseInt(positionsLength.toString());
+    let amountFor1Inch;
+    if (positionsConv === 1) {
+      const newContract = new ethers.Contract(leverageReserveTokens.aTokenAddress, iErc20Abi, signer);
+      const balance = await newContract.balanceOf(signer.getAddress());
+      amountFor1Inch = balance.toString();
+    } else {
+      amountFor1Inch = ethers.utils.parseUnits(data.leveragedAmount).toString();
+    }
     let swapData = await get1InchSwapData(
       data.collateral,
       data.leveragedAsset,
@@ -463,7 +467,6 @@ function NewUI(props) {
   const getPositions = async () => {
     let positions = [];
     const positionsLength = await contract.positionsLength(signer.getAddress());
-    console.log(positionsLength);
     const positionsConv = parseInt(positionsLength.toString());
     for (let i = 0; i < positionsConv; i++) {
       let position = await contract.positions(signer.getAddress(), i);

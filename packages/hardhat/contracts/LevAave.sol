@@ -1,8 +1,6 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.6.12;
 
-import "hardhat/console.sol";
-
 import { FlashLoanReceiverBase } from "./utils/FlashLoanReceiverBase.sol";
 import { ILendingPool } from "./interfaces/ILendingPool.sol";
 import { ILendingPoolAddressesProvider } from "./interfaces/ILendingPoolAddressesProvider.sol";
@@ -123,7 +121,6 @@ contract LevAave is FlashLoanReceiverBase {
             Position(positions[sender].length, 0, asset, positionAsset, amount, balanceFrom1Inch);
         positions[sender].push(newPosition);
         positionsOpen[sender]++;
-
         emit TransactionSuccess(sender, 0, leverage, asset, amount, positionAsset, balanceFrom1Inch);
     }
 
@@ -177,14 +174,14 @@ contract LevAave is FlashLoanReceiverBase {
             uint8 id,
             bytes memory oneInchData
         ) = abi.decode(params, (uint256, address, address, address, uint256, uint8, bytes));
-        {
-            // if no aave allowance, approve
-            if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) < amount) {
-                IERC20(asset).approve(address(LENDING_POOL), uint256(-1));
-            }
-            // first repay the debt of the user using the flashloan funds
-            LENDING_POOL.repay(asset, amount, 2, sender);
+
+        // if no aave allowance, approve
+        if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) < amount) {
+            IERC20(asset).approve(address(LENDING_POOL), uint256(-1));
         }
+        // first repay the debt of the user using the flashloan funds
+        LENDING_POOL.repay(asset, amount, 2, sender);
+
         {
             // transfer atoken from user to contract
             uint256 newAmount = IERC20(apositionAsset).balanceOf(sender);
@@ -213,13 +210,13 @@ contract LevAave is FlashLoanReceiverBase {
             uint256 balanceFrom1Inch = toUint256(res);
             // send collateral back to user
             IERC20(asset).transfer(sender, balanceFrom1Inch - amount.add(premium));
+            IERC20(positionAsset).transfer(sender, IERC20(positionAsset).balanceOf(address(this)));
         }
 
-        {
-            // remove position info from storage
-            delete positions[sender][id];
-            positionsOpen[sender]--;
-        }
+        // remove position info from storage
+        delete positions[sender][id];
+        positionsOpen[sender]--;
+
         emit TransactionSuccess(sender, 0, 0, asset, amount, positionAsset, collateralAmount);
     }
 
@@ -355,6 +352,7 @@ contract LevAave is FlashLoanReceiverBase {
         uint256 balanceFrom1Inch = toUint256(res);
         // send collateral back to user
         IERC20(asset).transfer(sender, balanceFrom1Inch - amount.add(premium));
+        IERC20(positionAsset).transfer(sender, IERC20(positionAsset).balanceOf(address(this)));
         // remove position info from storage
         delete positions[sender][id];
         positionsOpen[sender]--;

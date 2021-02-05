@@ -239,7 +239,7 @@ function UserData(props) {
             <div className="table-positions-label">Positions</div>
             {userAccountData && (
               <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
-                Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor).slice(0, 4)}
+                Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor)}
               </div>
             )}
           </div>
