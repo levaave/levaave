@@ -27,7 +27,7 @@ function UserData(props) {
   const POOL_ADDRESSES_PROVIDER_ADDRESS = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
   const PROTOCOL_DATA_PROVIDER = "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d";
   const LENDING_POOL = "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9";
-  const { signer, liveAsset, positions, closeLong, closeShort } = props;
+  const { signer, liveAsset, positions, closeLong, closeShort, setHealthFactor, healthFactor } = props;
 
   let addressProviderContract = new ethers.Contract(POOL_ADDRESSES_PROVIDER_ADDRESS, IAddressProvider, signer);
   let dataProviderContract = new ethers.Contract(PROTOCOL_DATA_PROVIDER, IDataProvider, signer);
@@ -188,6 +188,7 @@ function UserData(props) {
     let address = await signer.getAddress();
     let _accountData = await lendingPoolContract.getUserAccountData(address);
     setUserAccountData(_accountData);
+    setHealthFactor(ethers.utils.formatUnits(_accountData.healthFactor, 18).slice(0,4));
     let _userConfiguration = await lendingPoolContract.getUserConfiguration(address);
     checkUserConfiguration(_userConfiguration);
     setUserConfiguration(_userConfiguration);
@@ -227,7 +228,7 @@ function UserData(props) {
   // usePoller(getReserveTokens, 3000);
   // usePoller(getReserveData, 15000);
   // usePoller(getUserAssetData, 6000);
-  //usePoller(getUserInfo, 10000);
+  usePoller(getUserInfo, 10000);
   // if (activeTokenData && Object.keys(activeTokenData.length) > 0) {
   //  debugger;
   return (

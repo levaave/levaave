@@ -462,13 +462,31 @@ input[type=number] {
 
 .custom-popover {
   background-color: rgb(33, 36, 41);
-  border-radius: 25px;
+  border-radius: 20px;
   position: absolute;
-  will-change: transform;
-  min-width: 450px;
-  top: 0px;
-  left: 160px;
-  transform: translate3d(22px, 141px, 0px);
+    will-change: transform;
+    top: 0px;
+    left: 0px;
+  min-width: 165px;
+  max-width: 165px;
+  max-height: 200px;
+  overflow: scroll;
+  margin-top: 210px;
+  margin-left: 200px;
+  padding: 0px 0px;
+}
+
+.custom-popover-leverage {
+  position: absolute;
+    will-change: transform;
+    margin-top: 450px;
+    overflow: scroll;
+    max-height: 200px;
+    top: 0px;
+    left: 0px;
+    min-width: 165px;
+    margin-left: -20px;
+    transform: translate3d(270px, -125px, 0px);
 }
 
 .custom-inner-popover {
@@ -477,12 +495,39 @@ input[type=number] {
 
 .popover-body {
   background: #212429;
-  border-radius: 25px;
+  border-radius: 10px;
   color: white;
+  padding: 0px 0px;
+  background-color: rgb(33, 36, 41);
 }
 
 .dd-wrapper {
   color: white;
+  background-color: rgb(33, 36, 41);
+}
+
+.dd-option {
+  display: flex;
+  background-color: rgb(33, 36, 41);
+  padding: 5px 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  &.active{
+    background-color: #6c7284;
+    color: #40444f;
+  }
+  &:hover{
+    background-color: #6c7284;
+    color: #40444f;
+  }
+}
+
+.dd-option-icon {
+  margin-left: 20px;
+}
+
+.dd-option-text {
+  margin-left: 20px;
 }
 
 .connect-button {
