@@ -188,7 +188,7 @@ function UserData(props) {
     let address = await signer.getAddress();
     let _accountData = await lendingPoolContract.getUserAccountData(address);
     setUserAccountData(_accountData);
-    setHealthFactor(ethers.utils.formatUnits(_accountData.healthFactor, 18).slice(0,4));
+    //setHealthFactor(ethers.utils.formatUnits(_accountData.healthFactor, 18).slice(0,4));
     let _userConfiguration = await lendingPoolContract.getUserConfiguration(address);
     checkUserConfiguration(_userConfiguration);
     setUserConfiguration(_userConfiguration);

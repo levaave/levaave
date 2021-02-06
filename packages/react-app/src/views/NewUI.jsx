@@ -242,6 +242,7 @@ function NewUI(props) {
   const onChangeLeverageType = value => {
     // debugger;
     updateLeverageType(value);
+    estimateHealthFactorLong();
   };
 
   const updateCollateralCurrency = option => {
@@ -278,6 +279,7 @@ function NewUI(props) {
       );
       updateIsLoading(false);
       updateCollateralAmount(quotedCollateralAmountInWei);
+      estimateHealthFactorLong();
     } else {
       updateCollateralAmount("");
     }
@@ -307,6 +309,7 @@ function NewUI(props) {
 
       updateIsLoading(false);
       updateLeverageAmount(quotedLeverageAmountInWei);
+      estimateHealthFactorLong();
     } else {
       updateLeverageAmount("");
     }
@@ -497,6 +500,23 @@ function NewUI(props) {
     console.log("positions", positions);
     updatePositions(positions);
   };
+
+  const estimateHealthFactorLong = async () => {
+    const ethPosition = parseInt(collateralAmount) * leverageMultiplier;
+    const liquidationThreshold = 0.75;
+    const loanedAmount = ethPosition - parseInt(collateralAmount);
+    const healthFactor = (ethPosition * liquidationThreshold)/loanedAmount;
+    console.log("healthfactor", healthFactor);
+    setHealthFactor(healthFactor);
+  }
+
+  const estimateHealthFactorShort = async () => {
+    const ethPosition = parseInt(collateralAmount) * leverageMultiplier;
+    const liquidationThreshold = 0.825;
+    const loanedAmount = ethPosition - parseInt(collateralAmount);
+    const healthFactor = (ethPosition * liquidationThreshold)/loanedAmount;
+    setHealthFactor(healthFactor);
+  }
 
   usePoller(getPositions, 3000);
 
