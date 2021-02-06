@@ -242,7 +242,9 @@ function NewUI(props) {
   const onChangeLeverageType = value => {
     // debugger;
     updateLeverageType(value);
-    estimateHealthFactorLong();
+    if (collateralAmount.length > 1) {
+      estimateHealthFactor(collateralAmount);
+    }
   };
 
   const updateCollateralCurrency = option => {
@@ -279,7 +281,7 @@ function NewUI(props) {
       );
       updateIsLoading(false);
       updateCollateralAmount(quotedCollateralAmountInWei);
-      estimateHealthFactorLong();
+      estimateHealthFactor(amount);
     } else {
       updateCollateralAmount("");
     }
@@ -309,7 +311,7 @@ function NewUI(props) {
 
       updateIsLoading(false);
       updateLeverageAmount(quotedLeverageAmountInWei);
-      estimateHealthFactorLong();
+      estimateHealthFactor(amount);
     } else {
       updateLeverageAmount("");
     }
@@ -501,22 +503,36 @@ function NewUI(props) {
     updatePositions(positions);
   };
 
-  const estimateHealthFactorLong = async () => {
-    const ethPosition = parseInt(collateralAmount) * leverageMultiplier;
-    const liquidationThreshold = 0.75;
-    const loanedAmount = ethPosition - parseInt(collateralAmount);
-    const healthFactor = (ethPosition * liquidationThreshold)/loanedAmount;
-    console.log("healthfactor", healthFactor);
-    setHealthFactor(healthFactor);
-  }
+  const estimateHealthFactor = async amount => {
+    if (leverageType === "long") {
+      const ethPosition = parseFloat(amount) * parseFloat(leverageMultiplier + 1);
+      const liquidationThreshold = 0.75;
+      const loanedAmount = ethPosition - parseFloat(amount);
+      const healthFactor = (ethPosition * liquidationThreshold) / loanedAmount;
+      setHealthFactor(healthFactor);
+    } else if (leverageType === "short") {
+      const ethPosition = parseFloat(amount) * parseFloat(leverageMultiplier);
+      const liquidationThreshold = 0.825;
+      const loanedAmount = ethPosition - parseFloat(amount);
+      const healthFactor = (ethPosition * liquidationThreshold) / loanedAmount;
+      setHealthFactor(healthFactor);
+    }
+  };
+
+  const onClickLeverageMultiplier = x => {
+    if (collateralAmount.length > 1) {
+      estimateHealthFactor(collateralAmount);
+    }
+    updateLeverageMultiplier(x);
+  };
 
   const estimateHealthFactorShort = async () => {
     const ethPosition = parseInt(collateralAmount) * leverageMultiplier;
     const liquidationThreshold = 0.825;
     const loanedAmount = ethPosition - parseInt(collateralAmount);
-    const healthFactor = (ethPosition * liquidationThreshold)/loanedAmount;
+    const healthFactor = (ethPosition * liquidationThreshold) / loanedAmount;
     setHealthFactor(healthFactor);
-  }
+  };
 
   usePoller(getPositions, 3000);
 
@@ -672,7 +688,7 @@ function NewUI(props) {
                       {leverageType === "long" && (
                         <div
                           className={clsx({ "leverage-box": true, active: leverageMultiplier === 1 })}
-                          onClick={() => updateLeverageMultiplier(1)}
+                          onClick={() => onClickLeverageMultiplier(1)}
                         >
                           2x
                         </div>
@@ -680,7 +696,7 @@ function NewUI(props) {
                       {leverageType === "long" && (
                         <div
                           className={clsx({ "leverage-box": true, active: leverageMultiplier === 2 })}
-                          onClick={() => updateLeverageMultiplier(2)}
+                          onClick={() => onClickLeverageMultiplier(2)}
                         >
                           3x
                         </div>
@@ -688,7 +704,7 @@ function NewUI(props) {
                       {leverageType === "long" && (
                         <div
                           className={clsx({ "leverage-box": true, active: leverageMultiplier === 3 })}
-                          onClick={() => updateLeverageMultiplier(3)}
+                          onClick={() => onClickLeverageMultiplier(3)}
                         >
                           4x
                         </div>
@@ -696,7 +712,7 @@ function NewUI(props) {
                       {leverageType === "short" && (
                         <div
                           className={clsx({ "leverage-box-short": true, active: leverageMultiplier === 1 })}
-                          onClick={() => updateLeverageMultiplier(1)}
+                          onClick={() => onClickLeverageMultiplier(1)}
                         >
                           1x
                         </div>
@@ -704,7 +720,7 @@ function NewUI(props) {
                       {leverageType === "short" && (
                         <div
                           className={clsx({ "leverage-box-short": true, active: leverageMultiplier === 2 })}
-                          onClick={() => updateLeverageMultiplier(2)}
+                          onClick={() => onClickLeverageMultiplier(2)}
                         >
                           2x
                         </div>
@@ -712,7 +728,7 @@ function NewUI(props) {
                       {leverageType === "short" && (
                         <div
                           className={clsx({ "leverage-box-short": true, active: leverageMultiplier === 3 })}
-                          onClick={() => updateLeverageMultiplier(3)}
+                          onClick={() => onClickLeverageMultiplier(3)}
                         >
                           3x
                         </div>
