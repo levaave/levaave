@@ -786,17 +786,23 @@ function NewUI(props) {
                 <div className="slippage-tolerance-parent-div">
                   <div className="slippage-tolerance-grid-div">
                     <div className="slippage-tolerance-div">
-                      <div style={{textAlign: 'left'}}>
+                      <div style={{ textAlign: "left" }}>
                         <div className="slippage-tolerance-label">Slippage Tolerance</div>
-                        <div className={clsx({ "slippage-tolerance-percentage": true, short: leverageType === "short" })}>
+                        <div
+                          className={clsx({ "slippage-tolerance-percentage": true, short: leverageType === "short" })}
+                        >
                           1 %
                         </div>
                       </div>
-                      <div style={{textAlign: 'left', marginRight: '20px'}}>
-                        <div className="slippage-tolerance-label">Health Factor</div>
-                        {healthFactor && <div className={clsx({ "slippage-tolerance-percentage": true, short: leverageType === "short" })}>
-                          {healthFactor}
-                        </div>}
+                      <div style={{ textAlign: "left", marginRight: "20px" }}>
+                        <div className="slippage-tolerance-label">Est. Health Factor</div>
+                        {healthFactor && (
+                          <div
+                            className={clsx({ "slippage-tolerance-percentage": true, short: leverageType === "short" })}
+                          >
+                            {healthFactor}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -828,7 +834,7 @@ function NewUI(props) {
             setHealthFactor={setHealthFactor}
           />
           <Popover
-          style={{borderRadius: '10px'}}
+            style={{ borderRadius: "10px" }}
             placement="bottom"
             isOpen={isSelectingCollateralCurrency}
             target="collateral-token-dd"
@@ -839,23 +845,20 @@ function NewUI(props) {
             fade={false}
             backgroundColor="rgb(33, 36, 41);"
           >
-            <PopoverBody className="popover-body" style={{padding: '0px 0px'}}>
+            <PopoverBody className="popover-body" style={{ padding: "0px 0px" }}>
               <div className="dd-wrapper">
                 {tokenOptionsForCollateral.map(option => {
                   return (
                     <div
                       key={option.value}
-                      className={clsx("dd-option", {active: selectedCollateralCurrencyType.label === option.label})}
+                      className={clsx("dd-option", { active: selectedCollateralCurrencyType.label === option.label })}
                       onClick={() => {
                         updateCollateralCurrency(option);
                         updateIsSelectingCollateralCurrency(false);
                       }}
                     >
                       <div className="dd-option-icon">
-                          <img
-                            className="swap-page-input-body-button-img"
-                            src={tokenDataJson[option.label].logo}
-                          ></img>
+                        <img className="swap-page-input-body-button-img" src={tokenDataJson[option.label].logo}></img>
                       </div>
                       <div
                         className={clsx("dd-option-text", {
@@ -882,23 +885,20 @@ function NewUI(props) {
             fade={false}
             backgroundColor="rgb(33, 36, 41);"
           >
-            <PopoverBody className="popover-body" style={{padding: '0px 0px'}}>
+            <PopoverBody className="popover-body" style={{ padding: "0px 0px" }}>
               <div className="dd-wrapper">
                 {tokenOptionsForLeveraging.map(option => {
                   return (
                     <div
                       key={option.value}
-                      className={clsx("dd-option", {active: selectedLeverageCurrencyType.label === option.label})}
+                      className={clsx("dd-option", { active: selectedLeverageCurrencyType.label === option.label })}
                       onClick={() => {
                         updateLeverageCurrency(option);
                         updateIsSelectingLeverageCurrency(false);
                       }}
                     >
                       <div className="dd-option-icon">
-                        <img
-                            className="swap-page-input-body-button-img"
-                            src={tokenDataJson[option.label].logo}
-                          ></img>
+                        <img className="swap-page-input-body-button-img" src={tokenDataJson[option.label].logo}></img>
                       </div>
                       <div
                         className={clsx("dd-option-text", {
