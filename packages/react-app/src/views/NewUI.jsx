@@ -242,8 +242,9 @@ function NewUI(props) {
   const onChangeLeverageType = value => {
     // debugger;
     updateLeverageType(value);
+    updateLeverageMultiplier(1);
     if (collateralAmount && collateralAmount > 0) {
-      estimateHealthFactor(collateralAmount, leverageMultiplier);
+      estimateHealthFactor(collateralAmount, 1);
     }
   };
 
