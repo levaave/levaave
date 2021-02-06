@@ -242,8 +242,8 @@ function NewUI(props) {
   const onChangeLeverageType = value => {
     // debugger;
     updateLeverageType(value);
-    if (collateralAmount.length > 1) {
-      estimateHealthFactor(collateralAmount);
+    if (collateralAmount && collateralAmount > 0) {
+      estimateHealthFactor(collateralAmount, leverageMultiplier);
     }
   };
 
@@ -503,27 +503,36 @@ function NewUI(props) {
     updatePositions(positions);
   };
 
-  const estimateHealthFactor = async amount => {
+  const estimateHealthFactor = async (amount, multiplier=null) => {
+    let multiplierToBeUsed;
+    if (multiplier) {
+      multiplierToBeUsed = multiplier;
+    } else {
+      multiplierToBeUsed = leverageMultiplier;
+    }
     if (leverageType === "long") {
-      const ethPosition = parseFloat(amount) * parseFloat(leverageMultiplier + 1);
+      const ethPosition = parseFloat(amount) * parseFloat(multiplierToBeUsed + 1);
       const liquidationThreshold = 0.75;
       const loanedAmount = ethPosition - parseFloat(amount);
       const healthFactor = (ethPosition * liquidationThreshold) / loanedAmount;
+      console.log("xyzzzzzzzzzz", ethPosition, liquidationThreshold, loanedAmount, amount, multiplierToBeUsed);
       setHealthFactor(healthFactor);
     } else if (leverageType === "short") {
-      const ethPosition = parseFloat(amount) * parseFloat(leverageMultiplier);
+      const ethPosition = parseFloat(amount) * parseFloat(multiplierToBeUsed + 1);
       const liquidationThreshold = 0.825;
       const loanedAmount = ethPosition - parseFloat(amount);
       const healthFactor = (ethPosition * liquidationThreshold) / loanedAmount;
+      console.log("xyzzzzzzzzzz", ethPosition, liquidationThreshold, loanedAmount, amount, multiplierToBeUsed);
       setHealthFactor(healthFactor);
     }
   };
 
-  const onClickLeverageMultiplier = x => {
-    if (collateralAmount.length > 1) {
-      estimateHealthFactor(collateralAmount);
+  const onClickLeverageMultiplier = async x => {
+    await updateLeverageMultiplier(x);
+    console.log(collateralAmount);
+    if (collateralAmount && collateralAmount > 0) {
+      estimateHealthFactor(collateralAmount, x);
     }
-    updateLeverageMultiplier(x);
   };
 
   const estimateHealthFactorShort = async () => {
