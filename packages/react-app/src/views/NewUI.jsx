@@ -242,9 +242,17 @@ function NewUI(props) {
   const onChangeLeverageType = value => {
     // debugger;
     updateLeverageType(value);
-    updateLeverageMultiplier(1);
+    if (value === 'long') {
+      updateLeverageMultiplier(2);
+    } else {
+      updateLeverageMultiplier(1);
+    }
     if (collateralAmount && collateralAmount > 0) {
-      estimateHealthFactor(collateralAmount, 1);
+      if (value === 'long') {
+        estimateHealthFactor(collateralAmount, 1, value);
+      } else {
+        estimateHealthFactor(collateralAmount, 1, value);
+      }
     }
   };
 
@@ -504,21 +512,27 @@ function NewUI(props) {
     updatePositions(positions);
   };
 
-  const estimateHealthFactor = async (amount, multiplier=null) => {
+  const estimateHealthFactor = async (amount, multiplier=null, typeOfLeverage) => {
     let multiplierToBeUsed;
+    let leverageTypeToBeUsed;
+    if (typeOfLeverage) {
+      leverageTypeToBeUsed = typeOfLeverage;
+    } else {
+      leverageTypeToBeUsed = leverageType;
+    }
     if (multiplier) {
       multiplierToBeUsed = multiplier;
     } else {
       multiplierToBeUsed = leverageMultiplier;
     }
-    if (leverageType === "long") {
+    if (leverageTypeToBeUsed === "long") {
       const ethPosition = parseFloat(amount) * parseFloat(multiplierToBeUsed + 1);
       const liquidationThreshold = 0.75;
       const loanedAmount = ethPosition - parseFloat(amount);
       const healthFactor = (ethPosition * liquidationThreshold) / loanedAmount;
       console.log("xyzzzzzzzzzz", ethPosition, liquidationThreshold, loanedAmount, amount, multiplierToBeUsed);
       setHealthFactor(healthFactor);
-    } else if (leverageType === "short") {
+    } else if (leverageTypeToBeUsed === "short") {
       const ethPosition = parseFloat(amount) * parseFloat(multiplierToBeUsed + 1);
       const liquidationThreshold = 0.825;
       const loanedAmount = ethPosition - parseFloat(amount);
