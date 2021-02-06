@@ -189,6 +189,7 @@ function UserData(props) {
     let _accountData = await lendingPoolContract.getUserAccountData(address);
     setUserAccountData(_accountData);
     //setHealthFactor(ethers.utils.formatUnits(_accountData.healthFactor, 18).slice(0,4));
+    console.log("healthfactor", _accountData.healthFactor);
     let _userConfiguration = await lendingPoolContract.getUserConfiguration(address);
     checkUserConfiguration(_userConfiguration);
     setUserConfiguration(_userConfiguration);
@@ -237,11 +238,14 @@ function UserData(props) {
         <div className="table-positions">
           <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #1b432d" }}>
             <div className="table-positions-label">Positions</div>
-            {userAccountData && (
+            {(userAccountData && (parseFloat(ethers.utils.formatUnits(userAccountData.healthFactor)) < 1111111)) ?
               <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
                 Health Factor: {ethers.utils.formatUnits(userAccountData.healthFactor)}
+              </div>:
+              <div style={{ color: "#cbcbcb", fontSize: "15px" }}>
+                Health Factor: Loading...
               </div>
-            )}
+            }
           </div>
 
           <Table borderless style={{ color: "#A5A5A5" }} className="main-table">
