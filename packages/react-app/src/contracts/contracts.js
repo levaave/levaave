@@ -1,1 +1,1 @@
-module.exports = ["LevAave"];
+module.exports = [];
