@@ -262,33 +262,51 @@ function UserData(props) {
                 return (
                   <tr key={positionData.id}>
                     <th scope="row">
-                      {positionData.collateralSymbol}{" "}
+                      {positionData.direction === "0.0" ? positionData.collateralSymbol:positionData.leveragedAssetSymbol}{" "}
                       {/* <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.collateralSymbol].logo}></img> */}
                       {" - "}
-                      {positionData.leveragedAssetSymbol}{" "}
+                      {positionData.direction === "0.0" ? positionData.leveragedAssetSymbol: positionData.collateralSymbol}{" "}
                       {/* <img className="swap-page-input-body-button-img" src={tokenDataJson[positionData.leveragedAssetSymbol].logo}></img> */}
                     </th>
-                    <td>
+                    {positionData.direction === "0.0" ? (<td>
                       <img
                         className="swap-page-input-body-button-img"
                         src={tokenDataJson[positionData.collateralSymbol].logo}
                       ></img>
                       {"  "}
                       {positionData.collateralAmount} {positionData.collateralSymbol}
+                    </td>):(
+                      <td>
+                      <img
+                        className="swap-page-input-body-button-img"
+                        src={tokenDataJson[positionData.leveragedAssetSymbol].logo}
+                      ></img>
+                      {"  "}
+                      {positionData.leveragedAmount.slice(0,8)} {positionData.leveragedAssetSymbol}
                     </td>
+                    )}
                     {positionData.direction === "0.0" ? (
                       <td style={{ color: "#20bb56", fontStyle: "italic" }}>LONG</td>
                     ) : (
                       <td style={{ color: "#ed5c5c", fontStyle: "italic" }}>SHORT</td>
                     )}
-                    <td>
+                    {positionData.direction === "0.0" ?(<td>
                       <img
                         className="swap-page-input-body-button-img"
                         src={tokenDataJson[positionData.leveragedAssetSymbol].logo}
                       ></img>
                       {"  "}
                       {positionData.leveragedAmount.slice(0, 8)} {positionData.leveragedAssetSymbol}
+                    </td>):(
+                      <td>
+                      <img
+                        className="swap-page-input-body-button-img"
+                        src={tokenDataJson[positionData.collateralSymbol].logo}
+                      ></img>
+                      {"  "}
+                      {positionData.collateralAmount.slice(0, 8)} {positionData.collateralSymbol}
                     </td>
+                    )}
                     <td>
                       <button
                         className="close-position-button"
