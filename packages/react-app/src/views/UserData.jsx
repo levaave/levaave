@@ -279,10 +279,10 @@ function UserData(props) {
                       <td>
                       <img
                         className="swap-page-input-body-button-img"
-                        src={tokenDataJson[positionData.leveragedAssetSymbol].logo}
+                        src={tokenDataJson[positionData.collateralSymbol].logo}
                       ></img>
                       {"  "}
-                      {positionData.leveragedAmount.slice(0,8)} {positionData.leveragedAssetSymbol}
+                      {positionData.leveragedAmount.slice(0,8)} {positionData.collateralSymbol}
                     </td>
                     )}
                     {positionData.direction === "0.0" ? (
@@ -301,10 +301,10 @@ function UserData(props) {
                       <td>
                       <img
                         className="swap-page-input-body-button-img"
-                        src={tokenDataJson[positionData.collateralSymbol].logo}
+                        src={tokenDataJson[positionData.leveragedAssetSymbol].logo}
                       ></img>
                       {"  "}
-                      {positionData.collateralAmount.slice(0, 8)} {positionData.collateralSymbol}
+                      {positionData.collateralAmount.slice(0, 8)} {positionData.leveragedAssetSymbol}
                     </td>
                     )}
                     <td>
