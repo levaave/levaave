@@ -635,7 +635,7 @@ function NewUI(props) {
             <div className="swap-page-body">
               <div className="swap-page-grid">
                 {/* Collateral BOX */}
-                <div id="collateral-token-dd" className="swap-page-collateral-loan-div">
+                <div className="swap-page-collateral-loan-div">
                   <div className="swap-page-input-div">
                     {/* Input Collateral Label */}
                     <div className="swap-page-input-label-div">
@@ -661,7 +661,7 @@ function NewUI(props) {
                         }}
                         value={collateralAmount}
                       />
-                      <button className="swap-page-input-body-button">
+                      <button id="collateral-token-dd" className="swap-page-input-body-button">
                         <span className="swap-page-input-body-button-main-span">
                           <img
                             className="swap-page-input-body-button-img"
