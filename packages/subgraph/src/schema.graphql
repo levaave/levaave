@@ -1,0 +1,21 @@
+type User @entity {
+  id: ID!
+  address: String!
+  transactions: [Transaction!]! @derivedFrom(field: "user")
+  createdAt: BigInt!
+}
+
+type Transaction @entity {
+  id: ID!
+  user: User!
+  leverageMultiplier: Int!
+  leverageType: Int!
+  isActive: Boolean!
+  debtTokenAddress: String!
+  debtValue: BigInt!
+  leverageTokenAddress: String!
+  leverageValue: BigInt!
+  # transactionHash: BigInt!
+  createdAt: BigInt!
+  modifiedAt: BigInt!
+}
